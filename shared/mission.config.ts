@@ -1,9 +1,7 @@
 export const LAUNCH_DATE = '2026-04-01T22:24:00Z'
 
 export const NASA_STREAMS = [
-  '21X5lGlDOfg',
-  'P11y8N22Rq0',
-  'nA9UZF-SZoQ'
+  'NaJklsJonD4', 'Tf_UjBMIzNo'
 ] as const
 
 export type MissionPhase = 'prelaunch' | 'postlaunch'
@@ -15,10 +13,12 @@ export interface MissionEvent {
   description: string
   offsetLabel: string
   offsetSeconds: number
+  endOffsetSeconds?: number
 }
 
 interface RawMissionEvent {
   offset: string
+  endOffset?: string
   title: string
   description: string
 }
@@ -57,74 +57,442 @@ const toMissionEvent = (phase: MissionPhase, event: RawMissionEvent): MissionEve
   title: event.title,
   description: event.description,
   offsetLabel: event.offset,
-  offsetSeconds: parseOffsetSeconds(event.offset)
+  offsetSeconds: parseOffsetSeconds(event.offset),
+  ...(event.endOffset !== undefined ? { endOffsetSeconds: parseOffsetSeconds(event.endOffset) } : {})
 })
 
 const PRE_LAUNCH_RAW: RawMissionEvent[] = [
+  // L-49 hours 50 minutes and counting
   {
-    offset: '-46:00:00',
-    title: 'Launch countdown begins',
-    description: 'Artemis II officially enters the terminal launch campaign.'
+    offset: '-49:50:00',
+    title: 'Launch team arrives to stations',
+    description: 'The Artemis II launch team reports to their consoles in Firing Room 1 at Kennedy Space Center.'
   },
   {
-    offset: '-15:00:00',
-    title: 'Pad clears of non-essential personnel',
-    description: 'All non-essential workers depart Launch Pad 39B as hazardous operations continue.'
+    offset: '-49:40:00',
+    title: 'Countdown clock begins',
+    description: 'The official countdown clock starts ticking toward the planned liftoff time.'
+  },
+  {
+    offset: '-49:39:00',
+    endOffset: '-42:30:00',
+    title: 'LOX/LH2 system preparations',
+    description: 'Liquid oxygen and liquid hydrogen system preparations begin for vehicle loading.'
+  },
+  {
+    offset: '-45:30:00',
+    endOffset: '-44:00:00',
+    title: 'Orion spacecraft powered up',
+    description: 'The Orion crew module is powered up and brought online for pre-flight checkout.'
+  },
+  {
+    offset: '-42:20:00',
+    endOffset: '-41:00:00',
+    title: 'Core stage powered up',
+    description: 'The SLS core stage is powered up for system checks.'
+  },
+  {
+    offset: '-42:10:00',
+    endOffset: '-40:30:00',
+    title: 'ICPS powered up',
+    description: 'The interim cryogenic propulsion stage is powered up for pre-launch verification.'
+  },
+  {
+    offset: '-39:45:00',
+    endOffset: '-35:30:00',
+    title: 'RS-25 engine final preparations',
+    description: 'Final preparations of the four RS-25 engines begin.'
+  },
+  // L-35 hours and counting
+  {
+    offset: '-34:45:00',
+    endOffset: '-34:10:00',
+    title: 'ICPS is powered down',
+    description: 'The ICPS is powered down following initial checkout.'
+  },
+  {
+    offset: '-33:30:00',
+    endOffset: '-29:30:00',
+    title: 'Charge Orion flight batteries',
+    description: 'Orion flight batteries are charged to 100% for mission operations.'
+  },
+  {
+    offset: '-31:30:00',
+    endOffset: '-24:30:00',
+    title: 'Charge core stage flight batteries',
+    description: 'Core stage flight batteries are charged ahead of propellant loading.'
+  },
+  {
+    offset: '-20:15:00',
+    endOffset: '-18:45:00',
+    title: 'ICPS powered up for launch',
+    description: 'The ICPS is powered back up in its launch configuration.'
+  },
+  // L-16 hours and counting
+  {
+    offset: '-15:30:00',
+    endOffset: '-14:00:00',
+    title: 'Non-essential personnel leave LC 39B',
+    description: 'All non-essential personnel depart Launch Complex 39B as hazardous operations approach.'
+  },
+  {
+    offset: '-14:15:00',
+    endOffset: '-12:05:00',
+    title: 'Air-to-GN2 changeover and cavity inerting',
+    description: 'Air-to-gaseous nitrogen changeover begins and the rocket cavity is inerted for safety.'
+  },
+  {
+    offset: '-13:15:00',
+    endOffset: '-11:45:00',
+    title: 'Ground launch sequencer activation',
+    description: 'The ground launch sequencer (GLS) is brought online to manage the automated countdown.'
+  },
+  // L-13 hours and counting
+  {
+    offset: '-12:35:00',
+    endOffset: '-09:50:00',
+    title: 'Built-in countdown hold (2h 45m)',
+    description: 'A planned 2-hour 45-minute hold begins at T-8:10:00, providing schedule margin before tanking.'
+  },
+  {
+    offset: '-10:50:00',
+    title: 'Go/no-go for tanking',
+    description: 'The launch team decides go or no-go to begin cryogenic propellant loading.'
+  },
+  {
+    offset: '-10:49:00',
+    endOffset: '-09:35:00',
+    title: 'Orion cold soak',
+    description: 'Orion enters a cold soak phase in preparation for propellant loading operations.'
+  },
+  {
+    offset: '-10:40:00',
+    endOffset: '-10:35:00',
+    title: 'Core stage LOX transfer line chilldown',
+    description: 'The core stage liquid oxygen transfer line is chilled down to cryogenic temperatures.'
+  },
+  {
+    offset: '-10:39:00',
+    endOffset: '-09:55:00',
+    title: 'Core stage LH2 chilldown',
+    description: 'The core stage liquid hydrogen systems are chilled in preparation for propellant fill.'
+  },
+  {
+    offset: '-10:25:00',
+    endOffset: '-09:40:00',
+    title: 'Core stage LOX MPS chilldown',
+    description: 'The core stage liquid oxygen main propulsion system is chilled to operating temperature.'
+  },
+  // L-10 hours and counting
+  {
+    offset: '-09:55:00',
+    endOffset: '-09:25:00',
+    title: 'Core stage LH2 slow fill',
+    description: 'Liquid hydrogen slow fill begins on the core stage to gradually cool the tank.'
+  },
+  {
+    offset: '-09:50:00',
+    title: 'Resume T-clock from T-8H10M',
+    description: 'The terminal countdown clock resumes from the T-8:10:00 mark after the built-in hold.'
   },
   {
     offset: '-09:40:00',
-    title: 'Built-in hold begins',
-    description: 'Teams enter the planned hold before fueling transitions and final checks.'
+    endOffset: '-09:30:00',
+    title: 'Core stage LOX slow fill',
+    description: 'Liquid oxygen slow fill begins on the core stage.'
+  },
+  {
+    offset: '-09:30:00',
+    endOffset: '-06:40:00',
+    title: 'Core stage LOX fast fill',
+    description: 'Core stage liquid oxygen transitions to fast fill rate for bulk loading.'
+  },
+  {
+    offset: '-09:25:00',
+    endOffset: '-08:00:00',
+    title: 'Core stage LH2 fast fill',
+    description: 'Core stage liquid hydrogen transitions to fast fill rate.'
+  },
+  {
+    offset: '-09:05:00',
+    endOffset: '-08:30:00',
+    title: 'ICPS LH2 chilldown',
+    description: 'The ICPS liquid hydrogen system is chilled down to cryogenic temperatures.'
+  },
+  {
+    offset: '-08:30:00',
+    endOffset: '-07:45:00',
+    title: 'ICPS LH2 fast fill',
+    description: 'ICPS liquid hydrogen fast fill begins.'
   },
   {
     offset: '-08:00:00',
-    title: 'Core stage tanking begins',
-    description: 'Liquid oxygen and liquid hydrogen loading starts on the SLS core stage.'
+    endOffset: '-07:55:00',
+    title: 'Core stage LH2 topping',
+    description: 'Core stage liquid hydrogen tank transitions to topping mode.'
   },
   {
-    offset: '-03:30:00',
-    title: 'Crew departs O&C Building',
-    description: 'The Artemis II crew leaves the Neil Armstrong Operations and Checkout Building.'
+    offset: '-07:55:00',
+    endOffset: '00:00:00',
+    title: 'Core stage LH2 replenish',
+    description: 'Core stage liquid hydrogen enters continuous replenish mode through terminal count.'
   },
   {
-    offset: '-03:00:00',
-    title: 'Crew ingress begins',
-    description: 'Astronauts arrive at Pad 39B and start boarding Orion.'
+    offset: '-07:45:00',
+    endOffset: '-07:20:00',
+    title: 'ICPS LH2 vent and relief test',
+    description: 'The ICPS liquid hydrogen vent and relief valves are tested.'
   },
   {
-    offset: '-02:00:00',
-    title: 'Hatch closure and leak checks',
-    description: 'The Orion hatch is sealed and teams verify cabin integrity.'
+    offset: '-07:20:00',
+    endOffset: '-07:10:00',
+    title: 'ICPS LH2 tank topping',
+    description: 'ICPS liquid hydrogen tank transitions to topping mode.'
+  },
+  {
+    offset: '-07:05:00',
+    endOffset: '00:00:00',
+    title: 'ICPS LH2 replenish',
+    description: 'ICPS liquid hydrogen enters continuous replenish mode through terminal count.'
+  },
+  {
+    offset: '-06:40:00',
+    endOffset: '-06:10:00',
+    title: 'Orion communications activated',
+    description: 'Orion radio frequency communications to mission control are activated.'
+  },
+  {
+    offset: '-06:39:00',
+    endOffset: '-06:05:00',
+    title: 'Core stage LOX topping',
+    description: 'Core stage liquid oxygen transitions to topping mode.'
+  },
+  {
+    offset: '-06:38:00',
+    endOffset: '-06:30:00',
+    title: 'ICPS LOX MPS chilldown',
+    description: 'ICPS liquid oxygen main propulsion system chilldown begins.'
+  },
+  {
+    offset: '-06:30:00',
+    endOffset: '-05:45:00',
+    title: 'ICPS LOX fast fill',
+    description: 'ICPS liquid oxygen fast fill begins.'
+  },
+  {
+    offset: '-06:10:00',
+    title: 'Stage pad rescue / closeout crew assemble',
+    description: 'Stage pad rescue is prepared and the closeout crew assembles for crew ingress operations.'
+  },
+  {
+    offset: '-06:05:00',
+    endOffset: '00:00:00',
+    title: 'Core stage LOX replenish',
+    description: 'Core stage liquid oxygen enters continuous replenish mode through terminal count.'
+  },
+  // L-6 hours and counting
+  {
+    offset: '-06:00:00',
+    title: 'Flight crew weather brief',
+    description: 'The flight crew receives a final weather briefing for launch and abort landing sites.'
+  },
+  {
+    offset: '-05:45:00',
+    endOffset: '-05:30:00',
+    title: 'ICPS LOX vent and relief test',
+    description: 'ICPS liquid oxygen vent and relief valves are tested.'
+  },
+  {
+    offset: '-05:30:00',
+    endOffset: '-05:10:00',
+    title: 'ICPS LOX topping',
+    description: 'ICPS liquid oxygen transitions to topping mode.'
+  },
+  {
+    offset: '-05:10:00',
+    endOffset: '-04:00:00',
+    title: 'All stages replenish / built-in hold (1h 10m)',
+    description: 'All stages enter replenish mode. A 1-hour 10-minute built-in hold begins. Closeout crew proceeds to the white room.'
+  },
+  {
+    offset: '-04:40:00',
+    endOffset: '-04:10:00',
+    title: 'Flight crew deploys to pad',
+    description: 'The Artemis II crew departs crew quarters and travels to Launch Complex 39B.'
+  },
+  {
+    offset: '-04:00:00',
+    title: 'Flight crew boards Orion',
+    description: 'The four crew members enter the Orion spacecraft and take their seats.'
+  },
+  {
+    offset: '-03:40:00',
+    endOffset: '-03:10:00',
+    title: 'Crew module hatch preps and closure',
+    description: 'The Orion crew module hatch is prepared and closed by the closeout crew.'
+  },
+  {
+    offset: '-03:10:00',
+    endOffset: '-02:45:00',
+    title: 'Hatch seal and pressure decay checks',
+    description: 'Counterbalance mechanism hatch seal and pressure decay checks verify cabin integrity.'
+  },
+  {
+    offset: '-02:20:00',
+    endOffset: '-01:40:00',
+    title: 'Hatch service panel install and closeouts',
+    description: 'Crew module hatch service panel is installed and final closeout work is completed.'
+  },
+  {
+    offset: '-01:40:00',
+    endOffset: '-01:30:00',
+    title: 'LAS hatch closure for flight',
+    description: 'The launch abort system hatch is closed and secured for flight.'
+  },
+  {
+    offset: '-01:10:00',
+    title: 'Launch director brief and TPS scan',
+    description: 'The launch director reviews rocket and thermal protection system scan results with the imagery console.'
   },
   {
     offset: '-00:50:00',
-    title: 'Flight director poll for terminal count',
-    description: 'Mission management performs the final readiness poll before the terminal count.'
+    endOffset: '-00:40:00',
+    title: 'Closeout crew departs LC 39B',
+    description: 'The closeout crew departs Launch Complex 39B. The final NASA test director briefing is held.'
   },
+  // L-40 minutes and holding
+  {
+    offset: '-00:40:00',
+    endOffset: '-00:10:00',
+    title: 'Built-in hold (30 minutes)',
+    description: 'A planned 30-minute hold begins at T-0:10:00 for final readiness assessments before terminal count.'
+  },
+  // L-25 minutes and holding
+  {
+    offset: '-00:25:00',
+    title: 'Transition to Orion-to-Earth comm loop',
+    description: 'The team transitions to the Orion-to-Earth communication loop following the final NTD briefing.'
+  },
+  {
+    offset: '-00:17:00',
+    title: 'Launch director polls team for go',
+    description: 'The launch director polls the entire team to confirm they are go for launch.'
+  },
+  {
+    offset: '-00:15:00',
+    title: 'Flight crew visors down',
+    description: 'The Artemis II crew lowers and locks their helmet visors for launch.'
+  },
+  {
+    offset: '-00:14:00',
+    title: 'Flight crew short purge verification',
+    description: 'A short purge of the crew suit ventilation system is verified.'
+  },
+  // T-10 minutes and counting
   {
     offset: '-00:10:00',
-    title: 'Terminal countdown begins',
-    description: 'The final ten minutes start with the count progressing toward liftoff.'
+    title: 'GLS initiates terminal count',
+    description: 'The ground launch sequencer initiates the final automated terminal countdown.'
   },
   {
-    offset: '-00:05:00',
-    title: 'Orion transitions to internal power',
-    description: 'The spacecraft switches from ground support to onboard electrical power.'
+    offset: '-00:08:00',
+    title: 'Crew Access Arm retract',
+    description: 'The Crew Access Arm is retracted away from the Orion spacecraft.'
   },
   {
-    offset: '-00:01:00',
-    title: 'SLS flight computers take control',
-    description: 'Launch vehicle computers assume control for the final automated sequence.'
+    offset: '-00:06:00',
+    title: 'Core stage tank pressurization / Orion to internal power',
+    description: 'GLS commands core stage tank pressurization. Orion ascent pyros are armed and the spacecraft switches to internal power.'
+  },
+  {
+    offset: '-00:05:57',
+    title: 'Core stage LH2 terminate replenish',
+    description: 'Core stage liquid hydrogen replenish flow is terminated ahead of flight.'
+  },
+  {
+    offset: '-00:05:20',
+    title: 'LAS capability available',
+    description: 'Launch abort system capability becomes available. The NTD notifies the commander.'
+  },
+  {
+    offset: '-00:04:40',
+    title: 'GLS go for LH2 bleed check',
+    description: 'The ground launch sequencer commands the liquid hydrogen high flow bleed check.'
+  },
+  {
+    offset: '-00:04:30',
+    title: 'Flight termination system armed',
+    description: 'The flight termination system is armed for range safety.'
+  },
+  {
+    offset: '-00:04:00',
+    title: 'Core stage APU start / LOX terminate replenish',
+    description: 'GLS commands core stage auxiliary power unit start. Core stage LOX replenish flow is terminated.'
+  },
+  {
+    offset: '-00:03:30',
+    title: 'ICPS LOX terminate replenish',
+    description: 'ICPS liquid oxygen replenish flow is terminated.'
+  },
+  {
+    offset: '-00:03:10',
+    title: 'GLS go for purge sequence 4',
+    description: 'The ground launch sequencer commands purge sequence 4 for engine compartment inerting.'
+  },
+  {
+    offset: '-00:02:02',
+    title: 'ICPS switches to internal battery power',
+    description: 'The interim cryogenic propulsion stage transitions to internal battery power for flight.'
+  },
+  {
+    offset: '-00:02:00',
+    title: 'Boosters switch to internal power',
+    description: 'The solid rocket boosters switch from ground power to internal battery power.'
+  },
+  {
+    offset: '-00:01:30',
+    title: 'Core stage switches to internal power',
+    description: 'The SLS core stage transitions from ground support to internal power for flight.'
+  },
+  {
+    offset: '-00:01:20',
+    title: 'ICPS enters terminal countdown mode',
+    description: 'The interim cryogenic propulsion stage enters its final terminal countdown mode.'
+  },
+  {
+    offset: '-00:00:50',
+    title: 'ICPS LH2 terminate replenish',
+    description: 'ICPS liquid hydrogen replenish flow is terminated.'
+  },
+  {
+    offset: '-00:00:33',
+    title: 'Go for automated launch sequencer',
+    description: 'GLS sends the go command for the automated launch sequencer to take control.'
+  },
+  {
+    offset: '-00:00:30',
+    title: 'Core stage flight computer to auto sequence',
+    description: 'The core stage flight computer transitions to the automated launching sequencer.'
+  },
+  {
+    offset: '-00:00:12',
+    title: 'Hydrogen burn-off igniters initiated',
+    description: 'Hydrogen burn-off igniters fire beneath the RS-25 engines to clear residual hydrogen.'
+  },
+  {
+    offset: '-00:00:10',
+    title: 'GLS commands engine start',
+    description: 'The ground launch sequencer sends the command for core stage engine ignition.'
   },
   {
     offset: '-00:00:06',
-    title: 'RS-25 engine startup',
-    description: 'The four core stage RS-25 engines ignite moments before booster light.'
+    title: 'RS-25 engines startup',
+    description: 'The four RS-25 engines ignite in a staggered sequence and ramp to full thrust.'
   },
   {
     offset: '00:00:00',
-    title: 'Liftoff',
-    description: 'Artemis II lifts off from Launch Complex 39B.'
+    title: 'Booster ignition and liftoff',
+    description: 'Solid rocket boosters ignite, umbilicals separate, and Artemis II lifts off from Launch Complex 39B.'
   }
 ]
 

@@ -8,7 +8,7 @@ useHead({
     class: 'dark'
   },
   bodyAttrs: {
-    class: 'bg-[#02040a] text-slate-100 antialiased'
+    class: 'bg-[#06080f] text-slate-200 antialiased h-full overflow-hidden'
   },
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -25,7 +25,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <UApp>
+  <UApp class="h-full">
     <NuxtRouteAnnouncer />
     <NuxtPage />
   </UApp>
