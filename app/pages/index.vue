@@ -9,6 +9,8 @@ const filteredTimeline = computed(() => {
   if (activePhaseFilter.value === 'all') return missionState.value.timeline
   return missionState.value.timeline.filter(e => e.phase === activePhaseFilter.value)
 })
+
+const mobileTab = ref<'timeline' | 'stream'>('timeline')
 </script>
 
 <template>
@@ -16,10 +18,32 @@ const filteredTimeline = computed(() => {
     <!-- Sticky header -->
     <AppHeader />
 
+    <!-- Mobile tab bar -->
+    <div class="mobile-tab-bar md:hidden">
+      <button
+        type="button"
+        class="mobile-tab-btn"
+        :class="mobileTab === 'timeline' ? 'mobile-tab-btn-active' : ''"
+        @click="mobileTab = 'timeline'"
+      >
+        <UIcon name="i-lucide-list-ordered" class="h-4 w-4" />
+        Timeline
+      </button>
+      <button
+        type="button"
+        class="mobile-tab-btn"
+        :class="mobileTab === 'stream' ? 'mobile-tab-btn-active' : ''"
+        @click="mobileTab = 'stream'"
+      >
+        <UIcon name="i-lucide-radio" class="h-4 w-4" />
+        Live Feed
+      </button>
+    </div>
+
     <!-- Split body -->
     <div class="dashboard-body">
       <!-- Left: Timeline panel -->
-      <section class="timeline-panel">
+      <section class="timeline-panel" :class="{ 'panel-mobile-hidden': mobileTab !== 'timeline' }">
         <div class="panel-header">
           <div class="flex items-center gap-3">
             <UIcon name="i-lucide-list-ordered" class="h-3.5 w-3.5 text-slate-500" />
@@ -56,7 +80,7 @@ const filteredTimeline = computed(() => {
       </section>
 
       <!-- Right: Stream panel -->
-      <section class="stream-panel">
+      <section class="stream-panel" :class="{ 'panel-mobile-hidden': mobileTab !== 'stream' }">
         <div class="panel-header">
           <div class="flex items-center gap-3">
             <span class="live-dot h-1.5 w-1.5 rounded-full bg-red-500" />

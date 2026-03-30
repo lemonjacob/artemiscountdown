@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/ui',
     '@vueuse/nuxt'
+    // 'convex-nuxt'
   ],
 
   ssr: true,
