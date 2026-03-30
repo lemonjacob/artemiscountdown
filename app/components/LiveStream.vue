@@ -33,7 +33,7 @@ watch(streamEntries, (entries) => {
 
 const activeStream = computed(() => streamEntries.value[activeIndex.value] ?? null)
 const embedUrl = computed(() => activeStream.value
-  ? `https://www.youtube.com/embed/${activeStream.value.youtubeId}?rel=0&modestbranding=1&playsinline=1`
+  ? `https://www.youtube.com/embed/${activeStream.value.youtubeId}?&autoplay=1&rel=0&modestbranding=1&playsinline=1${activeStream.value.youtubeId == 'NaJklsJonD4' ? '&mute=1' : ''}`
   : null)
 </script>
 
@@ -51,7 +51,10 @@ const embedUrl = computed(() => activeStream.value
         loading="lazy"
         referrerpolicy="strict-origin-when-cross-origin"
       />
-      <div v-else class="flex h-full items-center justify-center">
+      <div
+        v-else
+        class="flex h-full items-center justify-center"
+      >
         <span class="text-xs text-slate-600">No feed selected</span>
       </div>
     </div>
@@ -70,7 +73,10 @@ const embedUrl = computed(() => activeStream.value
           class="feed-dot"
           :class="activeIndex === index ? 'bg-red-400' : 'bg-slate-700'"
         />
-        <span class="feed-label" :class="activeIndex === index ? 'text-white' : 'text-slate-400'">
+        <span
+          class="feed-label"
+          :class="activeIndex === index ? 'text-white' : 'text-slate-400'"
+        >
           {{ stream.label }}
         </span>
         <UIcon
