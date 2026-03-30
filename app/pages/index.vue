@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { NASA_STREAMS } from '~~/shared/mission.config'
+import { api } from '~~/convex/_generated/api'
 
 const { missionState } = useMissionClock()
+
+const { data: convexStreams } = useConvexQuery(api.streams.list)
+
+const streams = computed(() => {
+  const fromConvex = convexStreams.value
+  if (fromConvex && fromConvex.length > 0) return fromConvex
+  const fallbackLabels = ['24/7 Views', 'Launch Stream Coverage', 'Operations Feed', 'Tracking Feed']
+  return NASA_STREAMS.map((id, i) => ({ youtubeId: id, label: fallbackLabels[i] ?? `Feed ${i + 1}` }))
+})
 
 const activePhaseFilter = ref<'all' | 'prelaunch' | 'postlaunch'>('all')
 
@@ -86,11 +96,11 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
             <span class="live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
             <span class="panel-title">NASA Livestream</span>
           </div>
-          <span class="event-count">{{ NASA_STREAMS.length }} feeds</span>
+          <span class="event-count">{{ streams.length }} feeds</span>
         </div>
 
         <div class="stream-scroll">
-          <LiveStream :streams="NASA_STREAMS" />
+          <LiveStream :streams="streams" />
 
           <!-- Active event card -->
           <div v-if="missionState.activeEvent" class="active-event-card">
@@ -104,6 +114,9 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
               {{ missionState.activeEvent.description }}
             </p>
           </div>
+
+          <!-- Mission status messages -->
+          <StatusMessages />
 
           <!-- NASA Feed -->
           <NasaFeed />

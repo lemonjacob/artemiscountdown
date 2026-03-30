@@ -8,13 +8,21 @@
  * @module
  */
 
+import type * as missionConfig from "../missionConfig.js";
+import type * as statusMessages from "../statusMessages.js";
+import type * as streams from "../streams.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  missionConfig: typeof missionConfig;
+  statusMessages: typeof statusMessages;
+  streams: typeof streams;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.

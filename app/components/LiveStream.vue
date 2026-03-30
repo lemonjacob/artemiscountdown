@@ -1,14 +1,12 @@
 <script setup lang="ts">
-const props = defineProps<{
-  streams: readonly string[]
-}>()
+export interface StreamEntry {
+  youtubeId: string
+  label: string
+}
 
-const labels = [
-  '24/7 Views',
-  'Launch Stream Coverage',
-  'Operations Feed',
-  'Tracking Feed'
-] as const
+const props = defineProps<{
+  streams: readonly StreamEntry[]
+}>()
 
 const extractYouTubeId = (value: string) => {
   if (!value.includes('http')) return value
@@ -22,9 +20,9 @@ const extractYouTubeId = (value: string) => {
 }
 
 const streamEntries = computed(() => props.streams.map((stream, index) => ({
-  key: `${extractYouTubeId(stream)}-${index}`,
-  label: labels[index] ?? `Feed ${String(index + 1).padStart(2, '0')}`,
-  youtubeId: extractYouTubeId(stream)
+  key: `${extractYouTubeId(stream.youtubeId)}-${index}`,
+  label: stream.label,
+  youtubeId: extractYouTubeId(stream.youtubeId)
 })))
 
 const activeIndex = ref(0)

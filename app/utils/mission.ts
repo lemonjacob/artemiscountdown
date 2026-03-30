@@ -49,22 +49,27 @@ export const getEffectiveTSeconds = (secondsToLaunch: number): number => {
 export const isInHold = (secondsToLaunch: number): boolean =>
   HOLDS.some(h => secondsToLaunch <= h.startSeconds && secondsToLaunch > h.endSeconds)
 
-const toTimelineEvent = (event: MissionEvent): TimelineEvent => {
-  const timestamp = launchMs + event.offsetSeconds * 1000
+const toTimelineEvent = (event: MissionEvent, lMs: number): TimelineEvent => {
+  const timestamp = lMs + event.offsetSeconds * 1000
   const result: TimelineEvent = {
     ...event,
     timestamp,
     isoTime: new Date(timestamp).toISOString()
   }
   if (event.endOffsetSeconds !== undefined) {
-    result.endTimestamp = launchMs + event.endOffsetSeconds * 1000
+    result.endTimestamp = lMs + event.endOffsetSeconds * 1000
   }
   return result
 }
 
 const timeline = [...PRE_LAUNCH_EVENTS, ...POST_LAUNCH_EVENTS]
-  .map(toTimelineEvent)
+  .map(event => toTimelineEvent(event, launchMs))
   .sort((left, right) => left.timestamp - right.timestamp)
+
+export const buildTimeline = (customLaunchMs: number): TimelineEvent[] =>
+  [...PRE_LAUNCH_EVENTS, ...POST_LAUNCH_EVENTS]
+    .map(event => toTimelineEvent(event, customLaunchMs))
+    .sort((left, right) => left.timestamp - right.timestamp)
 
 export const getLaunchDate = () => new Date(launchMs)
 
@@ -147,14 +152,16 @@ export const formatEventTimestamp = (timestamp: number) => new Intl.DateTimeForm
   timeZoneName: 'short'
 }).format(timestamp)
 
-export const getMissionState = (now: number): MissionStateSnapshot => {
-  const secondsToLaunch = Math.max(0, Math.floor((launchMs - now) / 1000))
-  const missionElapsedSeconds = Math.max(0, Math.floor((now - launchMs) / 1000))
-  const activeIndex = timeline.findLastIndex(event => event.timestamp <= now)
-  const activeEvent = activeIndex >= 0 ? timeline[activeIndex] ?? null : null
-  const nextEvent = timeline.find(event => event.timestamp > now) || null
-  const firstTimestamp = timeline[0]?.timestamp ?? launchMs
-  const lastTimestamp = timeline.at(-1)?.timestamp ?? launchMs
+export const getMissionState = (now: number, customLaunchMs?: number, customTimeline?: TimelineEvent[]): MissionStateSnapshot => {
+  const effectiveLaunchMs = customLaunchMs ?? launchMs
+  const effectiveTimeline = customTimeline ?? timeline
+  const secondsToLaunch = Math.max(0, Math.floor((effectiveLaunchMs - now) / 1000))
+  const missionElapsedSeconds = Math.max(0, Math.floor((now - effectiveLaunchMs) / 1000))
+  const activeIndex = effectiveTimeline.findLastIndex(event => event.timestamp <= now)
+  const activeEvent = activeIndex >= 0 ? effectiveTimeline[activeIndex] ?? null : null
+  const nextEvent = effectiveTimeline.find(event => event.timestamp > now) || null
+  const firstTimestamp = effectiveTimeline[0]?.timestamp ?? effectiveLaunchMs
+  const lastTimestamp = effectiveTimeline.at(-1)?.timestamp ?? effectiveLaunchMs
 
   const progress = now <= firstTimestamp
     ? 0
@@ -162,7 +169,7 @@ export const getMissionState = (now: number): MissionStateSnapshot => {
       ? 1
       : (now - firstTimestamp) / (lastTimestamp - firstTimestamp)
 
-  const mode: 'countdown' | 'met' = now < launchMs ? 'countdown' : 'met'
+  const mode: 'countdown' | 'met' = now < effectiveLaunchMs ? 'countdown' : 'met'
   const effectiveTSeconds = mode === 'countdown'
     ? getEffectiveTSeconds(secondsToLaunch)
     : missionElapsedSeconds
@@ -173,7 +180,7 @@ export const getMissionState = (now: number): MissionStateSnapshot => {
   // - All ranged events that have started but not yet ended
   const activeEventIdSet = new Set<string>()
   if (activeEvent) activeEventIdSet.add(activeEvent.id)
-  for (const event of timeline) {
+  for (const event of effectiveTimeline) {
     if (
       event.endTimestamp !== undefined &&
       event.timestamp <= now &&
@@ -185,11 +192,11 @@ export const getMissionState = (now: number): MissionStateSnapshot => {
 
   return {
     now,
-    launchMs,
+    launchMs: effectiveLaunchMs,
     mode,
     secondsToLaunch,
     missionElapsedSeconds,
-    timeline,
+    timeline: effectiveTimeline,
     activeEvent,
     activeEventIds: [...activeEventIdSet],
     nextEvent,
