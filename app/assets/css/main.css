@@ -1,0 +1,137 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap");
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-mono: "Space Mono", "SFMono-Regular", monospace;
+}
+
+@layer base {
+  * {
+    @apply border-white/10;
+  }
+
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-[#02040a] text-slate-100 selection:bg-cyan-400/30 selection:text-white;
+    background-image:
+      radial-gradient(circle at top, rgba(34, 211, 238, 0.12), transparent 28%),
+      radial-gradient(circle at 85% 18%, rgba(249, 115, 22, 0.14), transparent 18%),
+      linear-gradient(180deg, #050916 0%, #02040a 45%, #030711 100%);
+  }
+}
+
+@layer components {
+  .space-panel {
+    @apply rounded-[2rem] border border-white/10 bg-slate-950/70 shadow-[0_40px_120px_rgba(2,6,23,0.85)] backdrop-blur-xl;
+  }
+
+  .space-panel-secondary {
+    @apply rounded-[1.75rem] border border-white/10 bg-white/[0.03] backdrop-blur;
+  }
+
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.4em] text-cyan-300/80;
+  }
+
+  .display-title {
+    @apply text-4xl font-semibold leading-tight text-white sm:text-5xl xl:text-6xl;
+  }
+
+  .section-title {
+    @apply text-2xl font-semibold tracking-tight text-white sm:text-3xl;
+  }
+
+  .count-card {
+    @apply rounded-[1.5rem] border border-white/10 bg-slate-950/80 px-4 py-5 text-center;
+  }
+
+  .count-value {
+    @apply font-mono text-3xl font-bold text-white sm:text-4xl;
+  }
+
+  .count-label {
+    @apply mt-2 text-xs uppercase tracking-[0.3em] text-slate-500;
+  }
+
+  .snapshot-card {
+    @apply flex items-center justify-between rounded-[1.5rem] border border-white/10 bg-white/[0.04] px-4 py-4;
+  }
+
+  .snapshot-label {
+    @apply text-sm uppercase tracking-[0.28em] text-slate-400;
+  }
+
+  .snapshot-value {
+    @apply text-base font-semibold text-white;
+  }
+
+  .info-card {
+    @apply rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4;
+  }
+
+  .info-label {
+    @apply text-xs uppercase tracking-[0.3em] text-slate-500;
+  }
+
+  .info-value {
+    @apply mt-3 block text-sm font-medium leading-6 text-slate-200;
+  }
+}
+
+.starfield {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.9) 0, transparent 1px),
+    radial-gradient(circle at 28% 72%, rgba(255, 255, 255, 0.8) 0, transparent 1px),
+    radial-gradient(circle at 64% 18%, rgba(34, 211, 238, 0.9) 0, transparent 1px),
+    radial-gradient(circle at 76% 64%, rgba(255, 255, 255, 0.9) 0, transparent 1px),
+    radial-gradient(circle at 90% 28%, rgba(249, 115, 22, 0.9) 0, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.5) 0, transparent 1px);
+  background-size: 280px 280px;
+  animation: drift 32s linear infinite;
+  pointer-events: none;
+}
+
+.orbital-glow {
+  position: absolute;
+  width: 38rem;
+  height: 38rem;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.orbital-glow-cyan {
+  top: -10rem;
+  left: -8rem;
+  background: rgba(34, 211, 238, 0.7);
+}
+
+.orbital-glow-orange {
+  right: -10rem;
+  top: 22rem;
+  background: rgba(249, 115, 22, 0.45);
+}
+
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-1.5%, 1.5%, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
