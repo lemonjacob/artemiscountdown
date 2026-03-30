@@ -284,6 +284,36 @@
     @apply text-xs font-medium transition-colors duration-150;
   }
 
+  /* ─── NASA Feed ──────────────────────────────────────── */
+
+  .nasa-feed {
+    @apply rounded-xl border border-white/[0.08] bg-white/[0.02];
+  }
+
+  .nasa-feed-header {
+    @apply flex items-center gap-2 px-3 py-2 border-b border-white/[0.06];
+  }
+
+  .nasa-feed-list {
+    @apply flex flex-col divide-y divide-white/[0.04];
+  }
+
+  .nasa-feed-item {
+    @apply block px-3 py-2.5 transition-colors duration-150 hover:bg-white/[0.03];
+  }
+
+  .nasa-feed-title {
+    @apply text-[11px] font-semibold leading-4 text-slate-200 line-clamp-2;
+  }
+
+  .nasa-feed-desc {
+    @apply mt-1 text-[10px] leading-3.5 text-slate-500 line-clamp-2;
+  }
+
+  .nasa-feed-date {
+    @apply mt-1.5 block font-mono text-[9px] text-slate-600;
+  }
+
   /* ─── Active / Next event cards ────────────────────────── */
 
   .active-event-card {

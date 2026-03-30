@@ -81,6 +81,9 @@ const filteredTimeline = computed(() => {
             </p>
           </div>
 
+          <!-- NASA Feed -->
+          <NasaFeed />
+
           <div v-if="missionState.nextEvent" class="next-event-card">
             <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
               Up Next
