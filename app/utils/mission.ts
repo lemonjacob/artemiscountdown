@@ -85,16 +85,39 @@ export const formatDurationParts = (totalSeconds: number) => {
   ]
 }
 
-export const formatMissionOffset = (offsetSeconds: number) => {
-  const sign = offsetSeconds >= 0 ? '+' : '-'
-  const absolute = Math.abs(offsetSeconds)
-  const days = Math.floor(absolute / 86400)
-  const hours = Math.floor((absolute % 86400) / 3600)
-  const minutes = Math.floor((absolute % 3600) / 60)
-  const seconds = absolute % 60
-  const time = [hours, minutes, seconds].map(part => String(part).padStart(2, '0')).join(':')
+export const formatMissionOffset = (offsetSeconds: number): string => {
+  if (offsetSeconds < 0) {
+    const abs = Math.abs(offsetSeconds)
+    const hours = Math.floor(abs / 3600)
+    const minutes = Math.floor((abs % 3600) / 60)
+    const seconds = abs % 60
 
-  return days > 0 ? `T${sign}${days}/${time}` : `T${sign}${time}`
+    if (abs > 600) {
+      // L- clock format (more than T-10M before launch)
+      if (hours > 0 && minutes > 0) return `L-${hours}H${minutes}M`
+      if (hours > 0) return `L-${hours}H`
+      return `L-${minutes}M`
+    } else {
+      // T- terminal count format (T-10M and closer)
+      if (minutes > 0 && seconds > 0) return `T-${minutes}M${seconds}S`
+      if (minutes > 0) return `T-${minutes}M`
+      return `T-${seconds}S`
+    }
+  } else {
+    // Post-launch T+ format
+    const days = Math.floor(offsetSeconds / 86400)
+    const hours = Math.floor((offsetSeconds % 86400) / 3600)
+    const minutes = Math.floor((offsetSeconds % 3600) / 60)
+    const seconds = offsetSeconds % 60
+
+    if (offsetSeconds === 0) return 'T+0'
+    let result = 'T+'
+    if (days > 0) result += `${days}D`
+    if (hours > 0) result += `${hours}H`
+    if (minutes > 0) result += `${minutes}M`
+    if (seconds > 0) result += `${seconds}S`
+    return result
+  }
 }
 
 export const formatTClock = (totalSeconds: number, mode: 'countdown' | 'met'): string => {
