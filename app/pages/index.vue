@@ -64,7 +64,6 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
               class="h-3.5 w-3.5 text-slate-500"
             />
             <span class="panel-title">Mission Timeline</span>
-            <span class="event-count">{{ filteredTimeline.length }}</span>
           </div>
           <div class="phase-filters">
             <button
@@ -104,7 +103,6 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
             <span class="live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
             <span class="panel-title">NASA Livestream</span>
           </div>
-          <span class="event-count">{{ streams.length }} feeds</span>
         </div>
 
         <div class="stream-scroll">

@@ -6,6 +6,8 @@ export const NASA_STREAMS = [
 
 export type MissionPhase = 'prelaunch' | 'postlaunch'
 
+export type MissionTag = 'tanking' | 'terminal-count'
+
 export interface MissionEvent {
   id: string
   phase: MissionPhase
@@ -14,6 +16,7 @@ export interface MissionEvent {
   offsetLabel: string
   offsetSeconds: number
   endOffsetSeconds?: number
+  tag?: MissionTag
 }
 
 interface RawMissionEvent {
@@ -21,6 +24,7 @@ interface RawMissionEvent {
   endOffset?: string
   title: string
   description: string
+  tag?: MissionTag
 }
 
 const slugify = (value: string) => value
@@ -58,7 +62,8 @@ const toMissionEvent = (phase: MissionPhase, event: RawMissionEvent): MissionEve
   description: event.description,
   offsetLabel: event.offset,
   offsetSeconds: parseOffsetSeconds(event.offset),
-  ...(event.endOffset !== undefined ? { endOffsetSeconds: parseOffsetSeconds(event.endOffset) } : {})
+  ...(event.endOffset !== undefined ? { endOffsetSeconds: parseOffsetSeconds(event.endOffset) } : {}),
+  ...(event.tag !== undefined ? { tag: event.tag } : {})
 })
 
 const PRE_LAUNCH_RAW: RawMissionEvent[] = [
@@ -157,7 +162,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-10:50:00',
     title: 'Go/no-go for tanking',
-    description: 'The launch team decides go or no-go to begin cryogenic propellant loading.'
+    description: 'The launch team decides go or no-go to begin cryogenic propellant loading.',
+    tag: 'tanking'
   },
   {
     offset: '-10:49:00',
@@ -169,26 +175,30 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-10:40:00',
     endOffset: '-10:35:00',
     title: 'Core stage LOX transfer line chilldown',
-    description: 'The core stage liquid oxygen transfer line is chilled down to cryogenic temperatures.'
+    description: 'The core stage liquid oxygen transfer line is chilled down to cryogenic temperatures.',
+    tag: 'tanking'
   },
   {
     offset: '-10:39:00',
     endOffset: '-09:55:00',
     title: 'Core stage LH2 chilldown',
-    description: 'The core stage liquid hydrogen systems are chilled in preparation for propellant fill.'
+    description: 'The core stage liquid hydrogen systems are chilled in preparation for propellant fill.',
+    tag: 'tanking'
   },
   {
     offset: '-10:25:00',
     endOffset: '-09:40:00',
     title: 'Core stage LOX MPS chilldown',
-    description: 'The core stage liquid oxygen main propulsion system is chilled to operating temperature.'
+    description: 'The core stage liquid oxygen main propulsion system is chilled to operating temperature.',
+    tag: 'tanking'
   },
   // L-10 hours and counting
   {
     offset: '-09:55:00',
     endOffset: '-09:25:00',
     title: 'Core stage LH2 slow fill',
-    description: 'Liquid hydrogen slow fill begins on the core stage to gradually cool the tank.'
+    description: 'Liquid hydrogen slow fill begins on the core stage to gradually cool the tank.',
+    tag: 'tanking'
   },
   {
     offset: '-09:50:00',
@@ -199,61 +209,71 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-09:40:00',
     endOffset: '-09:30:00',
     title: 'Core stage LOX slow fill',
-    description: 'Liquid oxygen slow fill begins on the core stage.'
+    description: 'Liquid oxygen slow fill begins on the core stage.',
+    tag: 'tanking'
   },
   {
     offset: '-09:30:00',
     endOffset: '-06:40:00',
     title: 'Core stage LOX fast fill',
-    description: 'Core stage liquid oxygen transitions to fast fill rate for bulk loading.'
+    description: 'Core stage liquid oxygen transitions to fast fill rate for bulk loading.',
+    tag: 'tanking'
   },
   {
     offset: '-09:25:00',
     endOffset: '-08:00:00',
     title: 'Core stage LH2 fast fill',
-    description: 'Core stage liquid hydrogen transitions to fast fill rate.'
+    description: 'Core stage liquid hydrogen transitions to fast fill rate.',
+    tag: 'tanking'
   },
   {
     offset: '-09:05:00',
     endOffset: '-08:30:00',
     title: 'ICPS LH2 chilldown',
-    description: 'The ICPS liquid hydrogen system is chilled down to cryogenic temperatures.'
+    description: 'The ICPS liquid hydrogen system is chilled down to cryogenic temperatures.',
+    tag: 'tanking'
   },
   {
     offset: '-08:30:00',
     endOffset: '-07:45:00',
     title: 'ICPS LH2 fast fill',
-    description: 'ICPS liquid hydrogen fast fill begins.'
+    description: 'ICPS liquid hydrogen fast fill begins.',
+    tag: 'tanking'
   },
   {
     offset: '-08:00:00',
     endOffset: '-07:55:00',
     title: 'Core stage LH2 topping',
-    description: 'Core stage liquid hydrogen tank transitions to topping mode.'
+    description: 'Core stage liquid hydrogen tank transitions to topping mode.',
+    tag: 'tanking'
   },
   {
     offset: '-07:55:00',
     endOffset: '00:00:00',
     title: 'Core stage LH2 replenish',
-    description: 'Core stage liquid hydrogen enters continuous replenish mode through terminal count.'
+    description: 'Core stage liquid hydrogen enters continuous replenish mode through terminal count.',
+    tag: 'tanking'
   },
   {
     offset: '-07:45:00',
     endOffset: '-07:20:00',
     title: 'ICPS LH2 vent and relief test',
-    description: 'The ICPS liquid hydrogen vent and relief valves are tested.'
+    description: 'The ICPS liquid hydrogen vent and relief valves are tested.',
+    tag: 'tanking'
   },
   {
     offset: '-07:20:00',
     endOffset: '-07:10:00',
     title: 'ICPS LH2 tank topping',
-    description: 'ICPS liquid hydrogen tank transitions to topping mode.'
+    description: 'ICPS liquid hydrogen tank transitions to topping mode.',
+    tag: 'tanking'
   },
   {
     offset: '-07:05:00',
     endOffset: '00:00:00',
     title: 'ICPS LH2 replenish',
-    description: 'ICPS liquid hydrogen enters continuous replenish mode through terminal count.'
+    description: 'ICPS liquid hydrogen enters continuous replenish mode through terminal count.',
+    tag: 'tanking'
   },
   {
     offset: '-06:40:00',
@@ -265,19 +285,22 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-06:39:00',
     endOffset: '-06:05:00',
     title: 'Core stage LOX topping',
-    description: 'Core stage liquid oxygen transitions to topping mode.'
+    description: 'Core stage liquid oxygen transitions to topping mode.',
+    tag: 'tanking'
   },
   {
     offset: '-06:38:00',
     endOffset: '-06:30:00',
     title: 'ICPS LOX MPS chilldown',
-    description: 'ICPS liquid oxygen main propulsion system chilldown begins.'
+    description: 'ICPS liquid oxygen main propulsion system chilldown begins.',
+    tag: 'tanking'
   },
   {
     offset: '-06:30:00',
     endOffset: '-05:45:00',
     title: 'ICPS LOX fast fill',
-    description: 'ICPS liquid oxygen fast fill begins.'
+    description: 'ICPS liquid oxygen fast fill begins.',
+    tag: 'tanking'
   },
   {
     offset: '-06:10:00',
@@ -288,7 +311,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-06:05:00',
     endOffset: '00:00:00',
     title: 'Core stage LOX replenish',
-    description: 'Core stage liquid oxygen enters continuous replenish mode through terminal count.'
+    description: 'Core stage liquid oxygen enters continuous replenish mode through terminal count.',
+    tag: 'tanking'
   },
   // L-6 hours and counting
   {
@@ -300,19 +324,22 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-05:45:00',
     endOffset: '-05:30:00',
     title: 'ICPS LOX vent and relief test',
-    description: 'ICPS liquid oxygen vent and relief valves are tested.'
+    description: 'ICPS liquid oxygen vent and relief valves are tested.',
+    tag: 'tanking'
   },
   {
     offset: '-05:30:00',
     endOffset: '-05:10:00',
     title: 'ICPS LOX topping',
-    description: 'ICPS liquid oxygen transitions to topping mode.'
+    description: 'ICPS liquid oxygen transitions to topping mode.',
+    tag: 'tanking'
   },
   {
     offset: '-05:10:00',
     endOffset: '-04:00:00',
     title: 'All stages replenish / built-in hold (1h 10m)',
-    description: 'All stages enter replenish mode. A 1-hour 10-minute built-in hold begins. Closeout crew proceeds to the white room.'
+    description: 'All stages enter replenish mode. A 1-hour 10-minute built-in hold begins. Closeout crew proceeds to the white room.',
+    tag: 'tanking'
   },
   {
     offset: '-04:40:00',
@@ -392,107 +419,128 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-00:10:00',
     title: 'GLS initiates terminal count',
-    description: 'The ground launch sequencer initiates the final automated terminal countdown.'
+    description: 'The ground launch sequencer initiates the final automated terminal countdown.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:08:00',
     title: 'Crew Access Arm retract',
-    description: 'The Crew Access Arm is retracted away from the Orion spacecraft.'
+    description: 'The Crew Access Arm is retracted away from the Orion spacecraft.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:06:00',
     title: 'Core stage tank pressurization / Orion to internal power',
-    description: 'GLS commands core stage tank pressurization. Orion ascent pyros are armed and the spacecraft switches to internal power.'
+    description: 'GLS commands core stage tank pressurization. Orion ascent pyros are armed and the spacecraft switches to internal power.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:05:57',
     title: 'Core stage LH2 terminate replenish',
-    description: 'Core stage liquid hydrogen replenish flow is terminated ahead of flight.'
+    description: 'Core stage liquid hydrogen replenish flow is terminated ahead of flight.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:05:20',
     title: 'LAS capability available',
-    description: 'Launch abort system capability becomes available. The NTD notifies the commander.'
+    description: 'Launch abort system capability becomes available. The NTD notifies the commander.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:04:40',
     title: 'GLS go for LH2 bleed check',
-    description: 'The ground launch sequencer commands the liquid hydrogen high flow bleed check.'
+    description: 'The ground launch sequencer commands the liquid hydrogen high flow bleed check.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:04:30',
     title: 'Flight termination system armed',
-    description: 'The flight termination system is armed for range safety.'
+    description: 'The flight termination system is armed for range safety.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:04:00',
     title: 'Core stage APU start / LOX terminate replenish',
-    description: 'GLS commands core stage auxiliary power unit start. Core stage LOX replenish flow is terminated.'
+    description: 'GLS commands core stage auxiliary power unit start. Core stage LOX replenish flow is terminated.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:03:30',
     title: 'ICPS LOX terminate replenish',
-    description: 'ICPS liquid oxygen replenish flow is terminated.'
+    description: 'ICPS liquid oxygen replenish flow is terminated.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:03:10',
     title: 'GLS go for purge sequence 4',
-    description: 'The ground launch sequencer commands purge sequence 4 for engine compartment inerting.'
+    description: 'The ground launch sequencer commands purge sequence 4 for engine compartment inerting.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:02:02',
     title: 'ICPS switches to internal battery power',
-    description: 'The interim cryogenic propulsion stage transitions to internal battery power for flight.'
+    description: 'The interim cryogenic propulsion stage transitions to internal battery power for flight.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:02:00',
     title: 'Boosters switch to internal power',
-    description: 'The solid rocket boosters switch from ground power to internal battery power.'
+    description: 'The solid rocket boosters switch from ground power to internal battery power.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:01:30',
     title: 'Core stage switches to internal power',
-    description: 'The SLS core stage transitions from ground support to internal power for flight.'
+    description: 'The SLS core stage transitions from ground support to internal power for flight.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:01:20',
     title: 'ICPS enters terminal countdown mode',
-    description: 'The interim cryogenic propulsion stage enters its final terminal countdown mode.'
+    description: 'The interim cryogenic propulsion stage enters its final terminal countdown mode.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:00:50',
     title: 'ICPS LH2 terminate replenish',
-    description: 'ICPS liquid hydrogen replenish flow is terminated.'
+    description: 'ICPS liquid hydrogen replenish flow is terminated.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:00:33',
     title: 'Go for automated launch sequencer',
-    description: 'GLS sends the go command for the automated launch sequencer to take control.'
+    description: 'GLS sends the go command for the automated launch sequencer to take control.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:00:30',
     title: 'Core stage flight computer to auto sequence',
-    description: 'The core stage flight computer transitions to the automated launching sequencer.'
+    description: 'The core stage flight computer transitions to the automated launching sequencer.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:00:12',
     title: 'Hydrogen burn-off igniters initiated',
-    description: 'Hydrogen burn-off igniters fire beneath the RS-25 engines to clear residual hydrogen.'
+    description: 'Hydrogen burn-off igniters fire beneath the RS-25 engines to clear residual hydrogen.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:00:10',
     title: 'GLS commands engine start',
-    description: 'The ground launch sequencer sends the command for core stage engine ignition.'
+    description: 'The ground launch sequencer sends the command for core stage engine ignition.',
+    tag: 'terminal-count'
   },
   {
     offset: '-00:00:06',
     title: 'RS-25 engines startup',
-    description: 'The four RS-25 engines ignite in a staggered sequence and ramp to full thrust.'
+    description: 'The four RS-25 engines ignite in a staggered sequence and ramp to full thrust.',
+    tag: 'terminal-count'
   },
   {
     offset: '00:00:00',
     title: 'Booster ignition and liftoff',
-    description: 'Solid rocket boosters ignite, umbilicals separate, and Artemis II lifts off from Launch Complex 39B.'
+    description: 'Solid rocket boosters ignite, umbilicals separate, and Artemis II lifts off from Launch Complex 39B.',
+    tag: 'terminal-count'
   }
 ]
 

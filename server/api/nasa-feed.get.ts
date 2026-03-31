@@ -15,16 +15,18 @@ export default defineCachedEventHandler(async () => {
   let match
 
   while ((match = itemRegex.exec(response)) !== null) {
-    const block = match[1]
-    const title = block.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/)?.[1]
-      ?? block.match(/<title>(.*?)<\/title>/)?.[1] ?? ''
-    const link = block.match(/<link>(.*?)<\/link>/)?.[1] ?? ''
-    const pubDate = block.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] ?? ''
-    const desc = block.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s)?.[1]
-      ?? block.match(/<description>(.*?)<\/description>/s)?.[1] ?? ''
-    const cleanDesc = desc.replace(/<[^>]*>/g, '').trim()
+    if (match[1] != undefined) {
+      const block = match[1]
+      const title = block.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/)?.[1]
+        ?? block.match(/<title>(.*?)<\/title>/)?.[1] ?? ''
+      const link = block.match(/<link>(.*?)<\/link>/)?.[1] ?? ''
+      const pubDate = block.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] ?? ''
+      const desc = block.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s)?.[1]
+        ?? block.match(/<description>(.*?)<\/description>/s)?.[1] ?? ''
+      const cleanDesc = desc.replace(/<[^>]*>/g, '').trim()
 
-    items.push({ title, link, pubDate, description: cleanDesc })
+      items.push({ title, link, pubDate, description: cleanDesc })
+    }
   }
 
   return items.slice(0, 5)

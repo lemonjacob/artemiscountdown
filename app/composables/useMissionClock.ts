@@ -22,7 +22,7 @@ export const useMissionClock = () => {
       now.value = Date.now()
       intervalId = window.setInterval(() => {
         now.value = Date.now()
-      }, 1000)
+      }, 1000) as never
     })
 
     onBeforeUnmount(() => {

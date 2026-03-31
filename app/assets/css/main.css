@@ -271,6 +271,16 @@
            border border-white/[0.12] bg-white/[0.06] text-white;
   }
 
+  .tag-badge-tanking {
+    @apply rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em]
+           bg-blue-500/10 text-blue-400/80;
+  }
+
+  .tag-badge-terminal-count {
+    @apply rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em]
+           bg-orange-500/10 text-red-600;
+  }
+
   /* ─── Stream ───────────────────────────────────────────── */
 
   .stream-container {

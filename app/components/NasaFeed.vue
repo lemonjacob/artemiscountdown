@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const { data: feed, status } = useFetch('/api/nasa-feed', {
-  lazy: true,
-  server: false
+  lazy: true
 })
 
 const formatDate = (dateStr: string) => {

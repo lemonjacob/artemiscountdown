@@ -14,6 +14,44 @@ const props = defineProps<{
   progress: number
 }>()
 
+const listRef = ref<HTMLOListElement | null>(null)
+const itemRefs = ref<HTMLLIElement[]>([])
+
+onBeforeUpdate(() => {
+  itemRefs.value = []
+})
+
+const lastScrolledForKey = ref<string | null>(null)
+
+function scrollToFirstActive() {
+  const firstActiveIndex = props.events.findIndex(
+    e => props.activeEventIds.includes(e.id) || props.nextEventId === e.id
+  )
+  if (firstActiveIndex < 0) return
+
+  const scrollKey = props.events[firstActiveIndex]?.id ?? null
+  if (scrollKey === lastScrolledForKey.value) return
+  lastScrolledForKey.value = scrollKey
+
+  const scrollContainer = listRef.value?.parentElement
+  if (!scrollContainer) return
+
+  const targetIndex = Math.max(0, firstActiveIndex - 1)
+  const targetEl = itemRefs.value[targetIndex]
+  if (!targetEl) return
+
+  const containerRect = scrollContainer.getBoundingClientRect()
+  const targetRect = targetEl.getBoundingClientRect()
+  scrollContainer.scrollTop += targetRect.top - containerRect.top
+}
+
+onMounted(() => nextTick(scrollToFirstActive))
+
+watch(
+  () => [props.activeEventIds, props.nextEventId, props.events] as const,
+  () => nextTick(scrollToFirstActive)
+)
+
 const stateFor = (event: TimelineEvent) => {
   if (event.endTimestamp !== undefined) {
     if (props.now >= event.endTimestamp) return 'complete'
@@ -46,9 +84,10 @@ const progressPercent = (event: TimelineEvent, index: number) =>
 </script>
 
 <template>
-  <ol class="timeline-list">
+  <ol ref="listRef" class="timeline-list">
     <li
       v-for="(event, index) in events"
+      :ref="(el: HTMLLIElement) => { if (el) itemRefs[index] = el as HTMLLIElement }"
       :key="event.id"
       class="timeline-item"
       :class="{
@@ -91,6 +130,11 @@ const progressPercent = (event: TimelineEvent, index: number) =>
             </span>
 
             <span
+              v-if="event.tag"
+              :class="event.tag === 'tanking' ? 'tag-badge-tanking' : 'tag-badge-terminal-count'"
+            >{{ event.tag === 'tanking' ? 'Tanking' : 'Terminal' }}</span>
+
+            <span
               v-if="nextEventId === event.id"
               class="next-badge"
             >Next</span>
@@ -125,15 +169,18 @@ const progressPercent = (event: TimelineEvent, index: number) =>
         </div>
 
         <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5 mb-1">
-          <span class="font-mono text-[10px] tabular-nums"
+          <span
+            class="font-mono text-[10px] tabular-nums"
             :class="stateFor(event) === 'complete' ? 'text-slate-700' : 'text-slate-500'"
           >{{ formatEventEDT(event.timestamp) }}</span>
           <template v-if="event.phase === 'prelaunch'">
-            <span class="font-mono text-[10px] tabular-nums"
+            <span
+              class="font-mono text-[10px] tabular-nums"
               :class="stateFor(event) === 'complete' ? 'text-slate-700' : 'text-slate-500'"
             >{{ getEventClocks(event).lClock }}</span>
           </template>
-          <span class="font-mono text-[10px] tabular-nums"
+          <span
+            class="font-mono text-[10px] tabular-nums"
             :class="stateFor(event) === 'active' ? 'text-cyan-500/80' : stateFor(event) === 'complete' ? 'text-slate-700' : 'text-slate-500'"
           >{{ getEventClocks(event).tClock }}</span>
         </div>
