@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TimelineEvent } from '~/utils/mission'
-import { formatMissionOffset } from '~/utils/mission'
+import { formatMissionOffset, formatEventEDT, getEventClocks } from '~/utils/mission'
 
 defineOptions({
   name: 'MissionTimeline'
@@ -15,13 +15,11 @@ const props = defineProps<{
 }>()
 
 const stateFor = (event: TimelineEvent) => {
-  // Ranged event: determine state from its own start/end timestamps
   if (event.endTimestamp !== undefined) {
     if (props.now >= event.endTimestamp) return 'complete'
     if (props.now >= event.timestamp) return 'active'
     return 'upcoming'
   }
-  // Point-in-time event: active = currently the most-recently-started milestone
   if (props.activeEventIds.includes(event.id)) return 'active'
   if (event.timestamp < props.now) return 'complete'
   return 'upcoming'
@@ -31,13 +29,11 @@ const eventProgress = (event: TimelineEvent, index: number): number => {
   const state = stateFor(event)
   if (state === 'complete') return 1
   if (state === 'upcoming') return 0
-  // Ranged event: use own endTimestamp for precise progress
   if (event.endTimestamp !== undefined) {
     const duration = event.endTimestamp - event.timestamp
     if (duration <= 0) return 1
     return Math.min(1, Math.max(0, (props.now - event.timestamp) / duration))
   }
-  // Point-in-time: interpolate toward next event
   const nextEvent = props.events[index + 1]
   if (!nextEvent) return 1
   const duration = nextEvent.timestamp - event.timestamp
@@ -58,16 +54,15 @@ const progressPercent = (event: TimelineEvent, index: number) =>
       :class="{
         'timeline-item-active': stateFor(event) === 'active',
         'timeline-item-complete': stateFor(event) === 'complete',
-        'timeline-item-next': nextEventId === event.id,
+        'timeline-item-next': nextEventId === event.id
       }"
     >
-      <!-- State dot -->
       <div
         class="timeline-dot"
         :class="{
           'timeline-dot-active': stateFor(event) === 'active',
           'timeline-dot-complete': stateFor(event) === 'complete',
-          'timeline-dot-upcoming': stateFor(event) === 'upcoming',
+          'timeline-dot-upcoming': stateFor(event) === 'upcoming'
         }"
       >
         <UIcon
@@ -81,14 +76,11 @@ const progressPercent = (event: TimelineEvent, index: number) =>
           :class="{
             'bg-cyan-400': stateFor(event) === 'active',
             'bg-slate-600': stateFor(event) === 'upcoming' && nextEventId !== event.id,
-            'bg-white': nextEventId === event.id,
+            'bg-white': nextEventId === event.id
           }"
         />
       </div>
-
-      <!-- Content -->
       <div class="timeline-content">
-        <!-- Header row -->
         <div class="timeline-row">
           <div class="flex flex-wrap items-center gap-1.5 min-w-0">
             <span
@@ -98,7 +90,10 @@ const progressPercent = (event: TimelineEvent, index: number) =>
               {{ event.phase === 'prelaunch' ? 'Pre' : 'Flight' }}
             </span>
 
-            <span v-if="nextEventId === event.id" class="next-badge">Next</span>
+            <span
+              v-if="nextEventId === event.id"
+              class="next-badge"
+            >Next</span>
 
             <span
               class="font-mono text-[10px] text-slate-600 tabular-nums"
@@ -129,39 +124,49 @@ const progressPercent = (event: TimelineEvent, index: number) =>
           </div>
         </div>
 
-        <!-- Title -->
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5 mb-1">
+          <span class="font-mono text-[10px] tabular-nums"
+            :class="stateFor(event) === 'complete' ? 'text-slate-700' : 'text-slate-500'"
+          >{{ formatEventEDT(event.timestamp) }}</span>
+          <template v-if="event.phase === 'prelaunch'">
+            <span class="font-mono text-[10px] tabular-nums"
+              :class="stateFor(event) === 'complete' ? 'text-slate-700' : 'text-slate-500'"
+            >{{ getEventClocks(event).lClock }}</span>
+          </template>
+          <span class="font-mono text-[10px] tabular-nums"
+            :class="stateFor(event) === 'active' ? 'text-cyan-500/80' : stateFor(event) === 'complete' ? 'text-slate-700' : 'text-slate-500'"
+          >{{ getEventClocks(event).tClock }}</span>
+        </div>
+
         <h3
           class="timeline-title"
           :class="{
             'text-white': stateFor(event) === 'active' || nextEventId === event.id,
             'text-slate-400': stateFor(event) === 'complete',
-            'text-slate-300': stateFor(event) === 'upcoming' && nextEventId !== event.id,
+            'text-slate-300': stateFor(event) === 'upcoming' && nextEventId !== event.id
           }"
         >
           {{ event.title }}
         </h3>
 
-        <!-- Progress bar -->
         <div class="progress-track">
           <div
             class="progress-fill"
             :class="{
               'progress-fill-active': stateFor(event) === 'active',
               'progress-fill-complete': stateFor(event) === 'complete',
-              'progress-fill-upcoming': stateFor(event) === 'upcoming',
+              'progress-fill-upcoming': stateFor(event) === 'upcoming'
             }"
             :style="{ width: `${progressPercent(event, index)}%` }"
           />
         </div>
-
-        <!-- Progress row: description + percent -->
         <div class="progress-row">
           <p
             class="timeline-description"
             :class="{
               'text-slate-400': stateFor(event) === 'active' || nextEventId === event.id,
               'text-slate-600': stateFor(event) === 'complete',
-              'text-slate-500': stateFor(event) === 'upcoming' && nextEventId !== event.id,
+              'text-slate-500': stateFor(event) === 'upcoming' && nextEventId !== event.id
             }"
           >
             {{ event.description }}

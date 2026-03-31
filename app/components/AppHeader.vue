@@ -3,12 +3,11 @@ import { formatTClock, formatLClock } from '~/utils/mission'
 
 const { missionState } = useMissionClock()
 
-// T-clock is inactive until "Countdown clock begins" at L-49H40M
-const COUNTDOWN_START_SECONDS = 49 * 3600 + 40 * 60 // 178800
+const COUNTDOWN_START_SECONDS = 49 * 3600 + 40 * 60
 
 const countdownStarted = computed(() =>
-  missionState.value.mode === 'met' ||
-  missionState.value.secondsToLaunch <= COUNTDOWN_START_SECONDS
+  missionState.value.mode === 'met'
+  || missionState.value.secondsToLaunch <= COUNTDOWN_START_SECONDS
 )
 
 const tClockSeconds = computed(() =>
@@ -34,26 +33,38 @@ const lClockValue = computed(() => {
 
 <template>
   <header class="mission-header">
-    <!-- Logo -->
     <div class="header-logo">
       <div class="logo-mark">
-        <UIcon name="i-lucide-rocket" class="h-3.5 w-3.5 text-white" />
+        <UIcon
+          name="i-lucide-rocket"
+          class="h-3.5 w-3.5 text-white"
+        />
       </div>
       <span class="header-mission-name">Artemis II</span>
     </div>
-
-    <!-- Clocks -->
     <div class="header-clocks">
       <div class="clock-block">
         <template v-if="countdownStarted">
-          <span class="clock-prefix" :class="missionState.mode === 'countdown' ? 'text-cyan-500' : 'text-amber-500'">
+          <span
+            class="clock-prefix"
+            :class="missionState.mode === 'countdown' ? 'text-cyan-500' : 'text-amber-500'"
+          >
             {{ tClockLabel }}
           </span>
-          <span class="clock-digits" :class="missionState.mode === 'countdown' ? 'text-cyan-200' : 'text-amber-200'">
+          <span
+            class="clock-digits"
+            :class="missionState.mode === 'countdown' ? 'text-cyan-200' : 'text-amber-200'"
+          >
             {{ tClockValue }}
           </span>
           <span
-            v-if="missionState.inHold"
+            v-if="missionState.terminalCountHold"
+            class="ml-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-red-400"
+          >
+            AWAITING GO
+          </span>
+          <span
+            v-else-if="missionState.inHold"
             class="ml-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-amber-400"
           >
             HOLD
@@ -81,7 +92,6 @@ const lClockValue = computed(() => {
       </template>
     </div>
 
-    <!-- Status -->
     <div class="header-status">
       <div
         class="status-pill text-[11px]"

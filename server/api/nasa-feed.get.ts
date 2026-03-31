@@ -22,8 +22,6 @@ export default defineCachedEventHandler(async () => {
     const pubDate = block.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] ?? ''
     const desc = block.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>/s)?.[1]
       ?? block.match(/<description>(.*?)<\/description>/s)?.[1] ?? ''
-
-    // Strip HTML tags from description
     const cleanDesc = desc.replace(/<[^>]*>/g, '').trim()
 
     items.push({ title, link, pubDate, description: cleanDesc })
@@ -31,6 +29,6 @@ export default defineCachedEventHandler(async () => {
 
   return items.slice(0, 5)
 }, {
-  maxAge: 600, // cache 10 minutes
+  maxAge: 600,
   name: 'nasa-artemis-feed'
 })

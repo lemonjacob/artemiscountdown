@@ -39,7 +39,6 @@ const embedUrl = computed(() => activeStream.value
 
 <template>
   <div class="stream-container">
-    <!-- Video -->
     <div class="video-wrapper">
       <iframe
         v-if="embedUrl"
@@ -58,8 +57,6 @@ const embedUrl = computed(() => activeStream.value
         <span class="text-xs text-slate-600">No feed selected</span>
       </div>
     </div>
-
-    <!-- Feed selector -->
     <div class="feed-selector">
       <button
         v-for="(stream, index) in streamEntries"

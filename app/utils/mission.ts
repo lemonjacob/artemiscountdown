@@ -19,19 +19,15 @@ export interface MissionStateSnapshot {
   progress: number
   effectiveTSeconds: number
   inHold: boolean
+  terminalCountHold: boolean
 }
 
 const launchMs = Date.parse(LAUNCH_DATE)
 
-// Built-in countdown holds: T-clock freezes during each hold period.
-// All seconds are measured relative to launch (positive = seconds before launch).
-// Hold 1: L-12h35m → L-9h50m, T-clock frozen at T-8:10:00
-// Hold 2: L-5h10m  → L-4h00m, T-clock frozen at T-3:30:00
-// Hold 3: L-40m    → L-10m,   T-clock frozen at T-0:10:00
 const HOLDS = [
   { startSeconds: 45300, endSeconds: 35400, frozenT: 29400 },
   { startSeconds: 18600, endSeconds: 14400, frozenT: 12600 },
-  { startSeconds: 2400,  endSeconds: 600,   frozenT: 600   },
+  { startSeconds: 2400, endSeconds: 600, frozenT: 600 }
 ] as const
 
 export const getEffectiveTSeconds = (secondsToLaunch: number): number => {
@@ -98,18 +94,15 @@ export const formatMissionOffset = (offsetSeconds: number): string => {
     const seconds = abs % 60
 
     if (abs > 600) {
-      // L- clock format (more than T-10M before launch)
       if (hours > 0 && minutes > 0) return `L-${hours}H${minutes}M`
       if (hours > 0) return `L-${hours}H`
       return `L-${minutes}M`
     } else {
-      // T- terminal count format (T-10M and closer)
       if (minutes > 0 && seconds > 0) return `T-${minutes}M${seconds}S`
       if (minutes > 0) return `T-${minutes}M`
       return `T-${seconds}S`
     }
   } else {
-    // Post-launch T+ format
     const days = Math.floor(offsetSeconds / 86400)
     const hours = Math.floor((offsetSeconds % 86400) / 3600)
     const minutes = Math.floor((offsetSeconds % 3600) / 60)
@@ -152,10 +145,70 @@ export const formatEventTimestamp = (timestamp: number) => new Intl.DateTimeForm
   timeZoneName: 'short'
 }).format(timestamp)
 
-export const getMissionState = (now: number, customLaunchMs?: number, customTimeline?: TimelineEvent[]): MissionStateSnapshot => {
-  const effectiveLaunchMs = customLaunchMs ?? launchMs
+export const formatEventEDT = (timestamp: number) => new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/New_York',
+  month: 'short',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: true,
+  timeZoneName: 'short'
+}).format(timestamp)
+
+export const getEventClocks = (event: { offsetSeconds: number, timestamp: number }) => {
+  if (event.offsetSeconds < 0) {
+    const secondsToLaunch = Math.abs(event.offsetSeconds)
+    const tSeconds = getEffectiveTSeconds(secondsToLaunch)
+    const tAbs = Math.floor(tSeconds)
+    const tH = Math.floor(tAbs / 3600)
+    const tM = Math.floor((tAbs % 3600) / 60)
+    const tS = tAbs % 60
+    const tClock = `T-${String(tH).padStart(2, '0')}:${String(tM).padStart(2, '0')}:${String(tS).padStart(2, '0')}`
+
+    const lAbs = Math.floor(secondsToLaunch)
+    const lH = Math.floor(lAbs / 3600)
+    const lM = Math.floor((lAbs % 3600) / 60)
+    const lS = lAbs % 60
+    const lClock = `L-${String(lH).padStart(2, '0')}:${String(lM).padStart(2, '0')}:${String(lS).padStart(2, '0')}`
+
+    return { tClock, lClock }
+  } else {
+    const abs = Math.floor(event.offsetSeconds)
+    const totalHours = Math.floor(abs / 3600)
+    const m = Math.floor((abs % 3600) / 60)
+    const s = abs % 60
+    const tClock = `T+${String(totalHours).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+    return { tClock, lClock: null }
+  }
+}
+
+const TERMINAL_COUNT_SECONDS = 600
+
+export const getMissionState = (
+  now: number,
+  customLaunchMs?: number,
+  customTimeline?: TimelineEvent[],
+  terminalCountGo?: { isGo: boolean, goTime: number | null }
+): MissionStateSnapshot => {
+  const baseLaunchMs = customLaunchMs ?? launchMs
+  const originalTerminalCountMs = baseLaunchMs - TERMINAL_COUNT_SECONDS * 1000
+
+  // If go was given after the original T-10 moment, shift T-0 to goTime + 10 min
+  let effectiveLaunchMs = baseLaunchMs
+  if (terminalCountGo?.isGo && terminalCountGo.goTime != null && terminalCountGo.goTime > originalTerminalCountMs) {
+    effectiveLaunchMs = terminalCountGo.goTime + TERMINAL_COUNT_SECONDS * 1000
+  }
+
   const effectiveTimeline = customTimeline ?? timeline
-  const secondsToLaunch = Math.max(0, Math.floor((effectiveLaunchMs - now) / 1000))
+
+  // Determine if we're holding at terminal count (no go, and wall clock has reached T-10)
+  const terminalCountHold = !terminalCountGo?.isGo && now >= originalTerminalCountMs
+
+  const rawSecondsToLaunch = Math.max(0, Math.floor((effectiveLaunchMs - now) / 1000))
+  // When holding at terminal count, freeze secondsToLaunch at T-10 (600s) for both clocks
+  const secondsToLaunch = terminalCountHold ? TERMINAL_COUNT_SECONDS : rawSecondsToLaunch
+
   const missionElapsedSeconds = Math.max(0, Math.floor((now - effectiveLaunchMs) / 1000))
   const activeIndex = effectiveTimeline.findLastIndex(event => event.timestamp <= now)
   const activeEvent = activeIndex >= 0 ? effectiveTimeline[activeIndex] ?? null : null
@@ -171,20 +224,17 @@ export const getMissionState = (now: number, customLaunchMs?: number, customTime
 
   const mode: 'countdown' | 'met' = now < effectiveLaunchMs ? 'countdown' : 'met'
   const effectiveTSeconds = mode === 'countdown'
-    ? getEffectiveTSeconds(secondsToLaunch)
+    ? (terminalCountHold ? TERMINAL_COUNT_SECONDS : getEffectiveTSeconds(secondsToLaunch))
     : missionElapsedSeconds
-  const inHold = mode === 'countdown' && isInHold(secondsToLaunch)
+  const inHold = terminalCountHold || (mode === 'countdown' && isInHold(secondsToLaunch))
 
-  // Collect all currently active event IDs:
-  // - The most recently started event (point-in-time milestone)
-  // - All ranged events that have started but not yet ended
   const activeEventIdSet = new Set<string>()
   if (activeEvent) activeEventIdSet.add(activeEvent.id)
   for (const event of effectiveTimeline) {
     if (
-      event.endTimestamp !== undefined &&
-      event.timestamp <= now &&
-      event.endTimestamp > now
+      event.endTimestamp !== undefined
+      && event.timestamp <= now
+      && event.endTimestamp > now
     ) {
       activeEventIdSet.add(event.id)
     }
@@ -203,5 +253,6 @@ export const getMissionState = (now: number, customLaunchMs?: number, customTime
     progress,
     effectiveTSeconds,
     inHold,
+    terminalCountHold
   }
 }

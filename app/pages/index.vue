@@ -25,10 +25,7 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
 
 <template>
   <div class="dashboard-root">
-    <!-- Sticky header -->
     <AppHeader />
-
-    <!-- Mobile tab bar -->
     <div class="mobile-tab-bar md:hidden">
       <button
         type="button"
@@ -36,7 +33,10 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
         :class="mobileTab === 'timeline' ? 'mobile-tab-btn-active' : ''"
         @click="mobileTab = 'timeline'"
       >
-        <UIcon name="i-lucide-list-ordered" class="h-4 w-4" />
+        <UIcon
+          name="i-lucide-list-ordered"
+          class="h-4 w-4"
+        />
         Timeline
       </button>
       <button
@@ -45,18 +45,24 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
         :class="mobileTab === 'stream' ? 'mobile-tab-btn-active' : ''"
         @click="mobileTab = 'stream'"
       >
-        <UIcon name="i-lucide-radio" class="h-4 w-4" />
+        <UIcon
+          name="i-lucide-radio"
+          class="h-4 w-4"
+        />
         Live Feed
       </button>
     </div>
-
-    <!-- Split body -->
     <div class="dashboard-body">
-      <!-- Left: Timeline panel -->
-      <section class="timeline-panel" :class="{ 'panel-mobile-hidden': mobileTab !== 'timeline' }">
+      <section
+        class="timeline-panel"
+        :class="{ 'panel-mobile-hidden': mobileTab !== 'timeline' }"
+      >
         <div class="panel-header">
           <div class="flex items-center gap-3">
-            <UIcon name="i-lucide-list-ordered" class="h-3.5 w-3.5 text-slate-500" />
+            <UIcon
+              name="i-lucide-list-ordered"
+              class="h-3.5 w-3.5 text-slate-500"
+            />
             <span class="panel-title">Mission Timeline</span>
             <span class="event-count">{{ filteredTimeline.length }}</span>
           </div>
@@ -89,8 +95,10 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
         </div>
       </section>
 
-      <!-- Right: Stream panel -->
-      <section class="stream-panel" :class="{ 'panel-mobile-hidden': mobileTab !== 'stream' }">
+      <section
+        class="stream-panel"
+        :class="{ 'panel-mobile-hidden': mobileTab !== 'stream' }"
+      >
         <div class="panel-header">
           <div class="flex items-center gap-3">
             <span class="live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
@@ -101,9 +109,10 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
 
         <div class="stream-scroll">
           <LiveStream :streams="streams" />
-
-          <!-- Active event card -->
-          <div v-if="missionState.activeEvent" class="active-event-card">
+          <div
+            v-if="missionState.activeEvent"
+            class="active-event-card"
+          >
             <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-400/70">
               Active Event
             </p>
@@ -114,14 +123,14 @@ const mobileTab = ref<'timeline' | 'stream'>('timeline')
               {{ missionState.activeEvent.description }}
             </p>
           </div>
-
-          <!-- Mission status messages -->
           <StatusMessages />
 
-          <!-- NASA Feed -->
           <NasaFeed />
 
-          <div v-if="missionState.nextEvent" class="next-event-card">
+          <div
+            v-if="missionState.nextEvent"
+            class="next-event-card"
+          >
             <p class="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
               Up Next
             </p>

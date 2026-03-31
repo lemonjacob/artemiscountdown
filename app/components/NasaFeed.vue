@@ -17,17 +17,26 @@ const formatDate = (dateStr: string) => {
 <template>
   <div class="nasa-feed">
     <div class="nasa-feed-header">
-      <UIcon name="i-lucide-rss" class="h-3 w-3 text-amber-400/70" />
+      <UIcon
+        name="i-lucide-rss"
+        class="h-3 w-3 text-amber-400/70"
+      />
       <span class="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-400/70">
         Latest from NASA
       </span>
     </div>
 
-    <div v-if="status === 'pending'" class="flex items-center justify-center py-4">
+    <div
+      v-if="status === 'pending'"
+      class="flex items-center justify-center py-4"
+    >
       <span class="text-[10px] text-slate-600">Loading feed...</span>
     </div>
 
-    <div v-else-if="feed?.length" class="nasa-feed-list">
+    <div
+      v-else-if="feed?.length"
+      class="nasa-feed-list"
+    >
       <a
         v-for="item in feed"
         :key="item.link"
@@ -42,7 +51,10 @@ const formatDate = (dateStr: string) => {
       </a>
     </div>
 
-    <div v-else class="flex items-center justify-center py-4">
+    <div
+      v-else
+      class="flex items-center justify-center py-4"
+    >
       <span class="text-[10px] text-slate-600">No articles available</span>
     </div>
   </div>

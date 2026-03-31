@@ -9,9 +9,15 @@ const visibleMessages = computed(() =>
 </script>
 
 <template>
-  <div v-if="visibleMessages.length" class="status-messages">
+  <div
+    v-if="visibleMessages.length"
+    class="status-messages"
+  >
     <div class="status-messages-header">
-      <UIcon name="i-lucide-megaphone" class="h-3 w-3 text-amber-400/70" />
+      <UIcon
+        name="i-lucide-megaphone"
+        class="h-3 w-3 text-amber-400/70"
+      />
       <span class="text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-400/70">
         Mission Status
       </span>
@@ -23,7 +29,9 @@ const visibleMessages = computed(() =>
         class="status-message-item"
       >
         <span class="status-message-dot" />
-        <p class="status-message-content">{{ msg.content }}</p>
+        <p class="status-message-content">
+          {{ msg.content }}
+        </p>
       </div>
     </div>
   </div>

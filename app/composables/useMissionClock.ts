@@ -7,6 +7,7 @@ export const useMissionClock = () => {
   let intervalId: ReturnType<typeof window.setInterval> | undefined
 
   const { data: launchDateFromConvex } = useConvexQuery(api.missionConfig.getLaunchDate)
+  const { data: terminalCountGoFromConvex } = useConvexQuery(api.missionConfig.getTerminalCountGo)
 
   const dynamicLaunchMs = computed(() => {
     const fromConvex = launchDateFromConvex.value
@@ -31,7 +32,14 @@ export const useMissionClock = () => {
     })
   }
 
-  const missionState = computed(() => getMissionState(now.value, dynamicLaunchMs.value, dynamicTimeline.value))
+  const missionState = computed(() =>
+    getMissionState(
+      now.value,
+      dynamicLaunchMs.value,
+      dynamicTimeline.value,
+      terminalCountGoFromConvex.value ?? undefined
+    )
+  )
 
   return {
     now: readonly(now),
