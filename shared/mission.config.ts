@@ -546,52 +546,52 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
 
 const POST_LAUNCH_RAW: RawMissionEvent[] = [
   {
-    offset: '+00:09',
+    offset: '+00:00:09',
     title: 'Tower clear and roll program',
     description: 'SLS clears the tower and begins the programmed roll and pitch maneuver.'
   },
   {
-    offset: '+00:56',
+    offset: '+00:00:56',
     title: 'Supersonic flight',
     description: 'The launch vehicle passes Mach 1 during ascent.'
   },
   {
-    offset: '+01:10',
+    offset: '+00:01:10',
     title: 'Maximum dynamic pressure',
     description: 'Artemis II reaches max-Q, the peak aerodynamic stress point.'
   },
   {
-    offset: '+02:08',
+    offset: '+00:02:08',
     title: 'Solid rocket booster separation',
     description: 'Both boosters separate after completing their ascent burn.'
   },
   {
-    offset: '+03:18',
+    offset: '+00:03:18',
     title: 'Launch abort system jettison',
     description: 'The launch abort system is discarded once it is no longer required.'
   },
   {
-    offset: '+08:06',
+    offset: '+00:08:06',
     title: 'Core stage main engine cutoff',
     description: 'The SLS core stage shuts down its RS-25 engines.'
   },
   {
-    offset: '+08:18',
+    offset: '+00:08:18',
     title: 'Core stage separation',
     description: 'The core stage separates from the ICPS in an initial parking orbit.'
   },
   {
-    offset: '+08:28',
+    offset: '+00:08:28',
     title: 'ICPS RL10 nozzle extension',
     description: 'The ICPS extends the RL10 nozzle in preparation for later burns.'
   },
   {
-    offset: '+20:00',
+    offset: '+00:20:00',
     title: 'Orion solar arrays deploy',
     description: 'Orion deploys its solar array wings for long-duration power generation.'
   },
   {
-    offset: '+49:00',
+    offset: '+00:49:00',
     title: 'Perigee raise maneuver',
     description: 'The ICPS performs a burn to raise the parking orbit perigee.'
   },

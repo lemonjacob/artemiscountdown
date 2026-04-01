@@ -13,8 +13,6 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
-
-  compatibilityDate: '2025-01-15',
   convex: {
     url: process.env.CONVEX_URL
   },
