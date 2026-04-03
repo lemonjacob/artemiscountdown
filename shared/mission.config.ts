@@ -638,6 +638,7 @@ const POST_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '+1/01:37',
     title: 'Translunar injection burn',
+    endOffset: '+1/01:43',
     description: 'A major burn sends Artemis II from Earth orbit onto its lunar trajectory.'
   },
   {
