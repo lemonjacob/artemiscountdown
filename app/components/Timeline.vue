@@ -84,10 +84,17 @@ const progressPercent = (event: TimelineEvent, index: number) =>
 </script>
 
 <template>
-  <ol ref="listRef" class="timeline-list">
+  <ol
+    ref="listRef"
+    class="timeline-list"
+  >
     <li
       v-for="(event, index) in events"
-      :ref="(el: HTMLLIElement) => { if (el) itemRefs[index] = el as HTMLLIElement }"
+      :ref="
+        (el: HTMLLIElement) => {
+          if (el) itemRefs[index] = el as HTMLLIElement;
+        }
+      "
       :key="event.id"
       class="timeline-item"
       :class="{
@@ -126,22 +133,20 @@ const progressPercent = (event: TimelineEvent, index: number) =>
               class="phase-badge"
               :class="event.phase === 'prelaunch' ? 'phase-badge-pre' : 'phase-badge-flight'"
             >
-              {{ event.phase === 'prelaunch' ? 'Pre' : 'Flight' }}
+              {{ event.phase === "prelaunch" ? "Pre" : "Flight" }}
             </span>
 
             <span
               v-if="event.tag"
               :class="event.tag === 'tanking' ? 'tag-badge-tanking' : 'tag-badge-terminal-count'"
-            >{{ event.tag === 'tanking' ? 'Tanking' : 'Terminal' }}</span>
+            >{{ event.tag === "tanking" ? "Tanking" : "Terminal" }}</span>
 
             <span
               v-if="nextEventId === event.id"
               class="next-badge"
             >Next</span>
 
-            <span
-              class="font-mono text-[10px] text-slate-600 tabular-nums"
-            >
+            <span class="font-mono text-[10px] text-slate-600 tabular-nums">
               {{ formatMissionOffset(event.offsetSeconds) }}
             </span>
           </div>
@@ -181,7 +186,13 @@ const progressPercent = (event: TimelineEvent, index: number) =>
           </template>
           <span
             class="font-mono text-[10px] tabular-nums"
-            :class="stateFor(event) === 'active' ? 'text-cyan-500/80' : stateFor(event) === 'complete' ? 'text-slate-700' : 'text-slate-500'"
+            :class="
+              stateFor(event) === 'active'
+                ? 'text-cyan-500/80'
+                : stateFor(event) === 'complete'
+                  ? 'text-slate-700'
+                  : 'text-slate-500'
+            "
           >{{ getEventClocks(event).tClock }}</span>
         </div>
 

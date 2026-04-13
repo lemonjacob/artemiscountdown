@@ -1,8 +1,6 @@
 export const LAUNCH_DATE = '2026-04-01T22:24:00Z'
 
-export const NASA_STREAMS = [
-  'NaJklsJonD4', 'Tf_UjBMIzNo'
-] as const
+export const NASA_STREAMS = ['NaJklsJonD4', 'Tf_UjBMIzNo'] as const
 
 export type MissionPhase = 'prelaunch' | 'postlaunch'
 
@@ -27,10 +25,11 @@ interface RawMissionEvent {
   tag?: MissionTag
 }
 
-const slugify = (value: string) => value
-  .toLowerCase()
-  .replace(/[^a-z0-9]+/g, '-')
-  .replace(/(^-|-$)/g, '')
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
 
 const parseOffsetSeconds = (offset: string) => {
   const sign = offset.startsWith('-') ? -1 : 1
@@ -62,7 +61,9 @@ const toMissionEvent = (phase: MissionPhase, event: RawMissionEvent): MissionEve
   description: event.description,
   offsetLabel: event.offset,
   offsetSeconds: parseOffsetSeconds(event.offset),
-  ...(event.endOffset !== undefined ? { endOffsetSeconds: parseOffsetSeconds(event.endOffset) } : {}),
+  ...(event.endOffset !== undefined
+    ? { endOffsetSeconds: parseOffsetSeconds(event.endOffset) }
+    : {}),
   ...(event.tag !== undefined ? { tag: event.tag } : {})
 })
 
@@ -71,7 +72,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-49:50:00',
     title: 'Launch team arrives to stations',
-    description: 'The Artemis II launch team reports to their consoles in Firing Room 1 at Kennedy Space Center.'
+    description:
+      'The Artemis II launch team reports to their consoles in Firing Room 1 at Kennedy Space Center.'
   },
   {
     offset: '-49:40:00',
@@ -100,7 +102,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-42:10:00',
     endOffset: '-40:30:00',
     title: 'ICPS powered up',
-    description: 'The interim cryogenic propulsion stage is powered up for pre-launch verification.'
+    description:
+      'The interim cryogenic propulsion stage is powered up for pre-launch verification.'
   },
   {
     offset: '-39:45:00',
@@ -138,26 +141,30 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-15:30:00',
     endOffset: '-14:00:00',
     title: 'Non-essential personnel leave LC 39B',
-    description: 'All non-essential personnel depart Launch Complex 39B as hazardous operations approach.'
+    description:
+      'All non-essential personnel depart Launch Complex 39B as hazardous operations approach.'
   },
   {
     offset: '-14:15:00',
     endOffset: '-12:05:00',
     title: 'Air-to-GN2 changeover and cavity inerting',
-    description: 'Air-to-gaseous nitrogen changeover begins and the rocket cavity is inerted for safety.'
+    description:
+      'Air-to-gaseous nitrogen changeover begins and the rocket cavity is inerted for safety.'
   },
   {
     offset: '-13:15:00',
     endOffset: '-11:45:00',
     title: 'Ground launch sequencer activation',
-    description: 'The ground launch sequencer (GLS) is brought online to manage the automated countdown.'
+    description:
+      'The ground launch sequencer (GLS) is brought online to manage the automated countdown.'
   },
   // L-13 hours and counting
   {
     offset: '-12:35:00',
     endOffset: '-09:50:00',
     title: 'Built-in countdown hold (2h 45m)',
-    description: 'A planned 2-hour 45-minute hold begins at T-8:10:00, providing schedule margin before tanking.'
+    description:
+      'A planned 2-hour 45-minute hold begins at T-8:10:00, providing schedule margin before tanking.'
   },
   {
     offset: '-10:50:00',
@@ -175,21 +182,24 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-10:40:00',
     endOffset: '-10:35:00',
     title: 'Core stage LOX transfer line chilldown',
-    description: 'The core stage liquid oxygen transfer line is chilled down to cryogenic temperatures.',
+    description:
+      'The core stage liquid oxygen transfer line is chilled down to cryogenic temperatures.',
     tag: 'tanking'
   },
   {
     offset: '-10:39:00',
     endOffset: '-09:55:00',
     title: 'Core stage LH2 chilldown',
-    description: 'The core stage liquid hydrogen systems are chilled in preparation for propellant fill.',
+    description:
+      'The core stage liquid hydrogen systems are chilled in preparation for propellant fill.',
     tag: 'tanking'
   },
   {
     offset: '-10:25:00',
     endOffset: '-09:40:00',
     title: 'Core stage LOX MPS chilldown',
-    description: 'The core stage liquid oxygen main propulsion system is chilled to operating temperature.',
+    description:
+      'The core stage liquid oxygen main propulsion system is chilled to operating temperature.',
     tag: 'tanking'
   },
   // L-10 hours and counting
@@ -203,7 +213,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-09:50:00',
     title: 'Resume T-clock from T-8H10M',
-    description: 'The terminal countdown clock resumes from the T-8:10:00 mark after the built-in hold.'
+    description:
+      'The terminal countdown clock resumes from the T-8:10:00 mark after the built-in hold.'
   },
   {
     offset: '-09:40:00',
@@ -251,7 +262,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-07:55:00',
     endOffset: '00:00:00',
     title: 'Core stage LH2 replenish',
-    description: 'Core stage liquid hydrogen enters continuous replenish mode through terminal count.',
+    description:
+      'Core stage liquid hydrogen enters continuous replenish mode through terminal count.',
     tag: 'tanking'
   },
   {
@@ -305,20 +317,23 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-06:10:00',
     title: 'Stage pad rescue / closeout crew assemble',
-    description: 'Stage pad rescue is prepared and the closeout crew assembles for crew ingress operations.'
+    description:
+      'Stage pad rescue is prepared and the closeout crew assembles for crew ingress operations.'
   },
   {
     offset: '-06:05:00',
     endOffset: '00:00:00',
     title: 'Core stage LOX replenish',
-    description: 'Core stage liquid oxygen enters continuous replenish mode through terminal count.',
+    description:
+      'Core stage liquid oxygen enters continuous replenish mode through terminal count.',
     tag: 'tanking'
   },
   // L-6 hours and counting
   {
     offset: '-06:00:00',
     title: 'Flight crew weather brief',
-    description: 'The flight crew receives a final weather briefing for launch and abort landing sites.'
+    description:
+      'The flight crew receives a final weather briefing for launch and abort landing sites.'
   },
   {
     offset: '-05:45:00',
@@ -338,7 +353,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-05:10:00',
     endOffset: '-04:00:00',
     title: 'All stages replenish / built-in hold (1h 10m)',
-    description: 'All stages enter replenish mode. A 1-hour 10-minute built-in hold begins. Closeout crew proceeds to the white room.',
+    description:
+      'All stages enter replenish mode. A 1-hour 10-minute built-in hold begins. Closeout crew proceeds to the white room.',
     tag: 'tanking'
   },
   {
@@ -362,13 +378,15 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
     offset: '-03:10:00',
     endOffset: '-02:45:00',
     title: 'Hatch seal and pressure decay checks',
-    description: 'Counterbalance mechanism hatch seal and pressure decay checks verify cabin integrity.'
+    description:
+      'Counterbalance mechanism hatch seal and pressure decay checks verify cabin integrity.'
   },
   {
     offset: '-02:20:00',
     endOffset: '-01:40:00',
     title: 'Hatch service panel install and closeouts',
-    description: 'Crew module hatch service panel is installed and final closeout work is completed.'
+    description:
+      'Crew module hatch service panel is installed and final closeout work is completed.'
   },
   {
     offset: '-01:40:00',
@@ -379,26 +397,30 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-01:10:00',
     title: 'Launch director brief and TPS scan',
-    description: 'The launch director reviews rocket and thermal protection system scan results with the imagery console.'
+    description:
+      'The launch director reviews rocket and thermal protection system scan results with the imagery console.'
   },
   {
     offset: '-00:50:00',
     endOffset: '-00:40:00',
     title: 'Closeout crew departs LC 39B',
-    description: 'The closeout crew departs Launch Complex 39B. The final NASA test director briefing is held.'
+    description:
+      'The closeout crew departs Launch Complex 39B. The final NASA test director briefing is held.'
   },
   // L-40 minutes and holding
   {
     offset: '-00:40:00',
     endOffset: '-00:10:00',
     title: 'Built-in hold (30 minutes)',
-    description: 'A planned 30-minute hold begins at T-0:10:00 for final readiness assessments before terminal count.'
+    description:
+      'A planned 30-minute hold begins at T-0:10:00 for final readiness assessments before terminal count.'
   },
   // L-25 minutes and holding
   {
     offset: '-00:25:00',
     title: 'Transition to Orion-to-Earth comm loop',
-    description: 'The team transitions to the Orion-to-Earth communication loop following the final NTD briefing.'
+    description:
+      'The team transitions to the Orion-to-Earth communication loop following the final NTD briefing.'
   },
   {
     offset: '-00:17:00',
@@ -431,7 +453,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-00:06:00',
     title: 'Core stage tank pressurization / Orion to internal power',
-    description: 'GLS commands core stage tank pressurization. Orion ascent pyros are armed and the spacecraft switches to internal power.',
+    description:
+      'GLS commands core stage tank pressurization. Orion ascent pyros are armed and the spacecraft switches to internal power.',
     tag: 'terminal-count'
   },
   {
@@ -443,7 +466,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-00:05:20',
     title: 'LAS capability available',
-    description: 'Launch abort system capability becomes available. The NTD notifies the commander.',
+    description:
+      'Launch abort system capability becomes available. The NTD notifies the commander.',
     tag: 'terminal-count'
   },
   {
@@ -461,7 +485,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-00:04:00',
     title: 'Core stage APU start / LOX terminate replenish',
-    description: 'GLS commands core stage auxiliary power unit start. Core stage LOX replenish flow is terminated.',
+    description:
+      'GLS commands core stage auxiliary power unit start. Core stage LOX replenish flow is terminated.',
     tag: 'terminal-count'
   },
   {
@@ -473,13 +498,15 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-00:03:10',
     title: 'GLS go for purge sequence 4',
-    description: 'The ground launch sequencer commands purge sequence 4 for engine compartment inerting.',
+    description:
+      'The ground launch sequencer commands purge sequence 4 for engine compartment inerting.',
     tag: 'terminal-count'
   },
   {
     offset: '-00:02:02',
     title: 'ICPS switches to internal battery power',
-    description: 'The interim cryogenic propulsion stage transitions to internal battery power for flight.',
+    description:
+      'The interim cryogenic propulsion stage transitions to internal battery power for flight.',
     tag: 'terminal-count'
   },
   {
@@ -521,7 +548,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '-00:00:12',
     title: 'Hydrogen burn-off igniters initiated',
-    description: 'Hydrogen burn-off igniters fire beneath the RS-25 engines to clear residual hydrogen.',
+    description:
+      'Hydrogen burn-off igniters fire beneath the RS-25 engines to clear residual hydrogen.',
     tag: 'terminal-count'
   },
   {
@@ -539,7 +567,8 @@ const PRE_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '00:00:00',
     title: 'Booster ignition and liftoff',
-    description: 'Solid rocket boosters ignite, umbilicals separate, and Artemis II lifts off from Launch Complex 39B.',
+    description:
+      'Solid rocket boosters ignite, umbilicals separate, and Artemis II lifts off from Launch Complex 39B.',
     tag: 'terminal-count'
   }
 ]
@@ -623,7 +652,8 @@ const POST_LAUNCH_RAW: RawMissionEvent[] = [
   {
     offset: '+05:02',
     title: 'ICPS splashdown targeting',
-    description: 'The disposal burn refines the ICPS path toward atmospheric reentry and ocean impact.'
+    description:
+      'The disposal burn refines the ICPS path toward atmospheric reentry and ocean impact.'
   },
   {
     offset: '+05:04',
@@ -789,4 +819,6 @@ const POST_LAUNCH_RAW: RawMissionEvent[] = [
 ]
 
 export const PRE_LAUNCH_EVENTS = PRE_LAUNCH_RAW.map(event => toMissionEvent('prelaunch', event))
-export const POST_LAUNCH_EVENTS = POST_LAUNCH_RAW.map(event => toMissionEvent('postlaunch', event))
+export const POST_LAUNCH_EVENTS = POST_LAUNCH_RAW.map(event =>
+  toMissionEvent('postlaunch', event)
+)

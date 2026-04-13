@@ -59,7 +59,10 @@ export const setTerminalCountGo = mutation({
     if (existingFlag) {
       await ctx.db.patch(existingFlag._id, { value: args.isGo ? 'true' : 'false' })
     } else {
-      await ctx.db.insert('missionConfig', { key: 'terminalCountGoFlag', value: args.isGo ? 'true' : 'false' })
+      await ctx.db.insert('missionConfig', {
+        key: 'terminalCountGoFlag',
+        value: args.isGo ? 'true' : 'false'
+      })
     }
 
     const existingTime = await ctx.db

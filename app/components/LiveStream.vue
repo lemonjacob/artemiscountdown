@@ -19,22 +19,30 @@ const extractYouTubeId = (value: string) => {
   }
 }
 
-const streamEntries = computed(() => props.streams.map((stream, index) => ({
-  key: `${extractYouTubeId(stream.youtubeId)}-${index}`,
-  label: stream.label,
-  youtubeId: extractYouTubeId(stream.youtubeId)
-})))
+const streamEntries = computed(() =>
+  props.streams.map((stream, index) => ({
+    key: `${extractYouTubeId(stream.youtubeId)}-${index}`,
+    label: stream.label,
+    youtubeId: extractYouTubeId(stream.youtubeId)
+  }))
+)
 
 const activeIndex = ref(0)
 
-watch(streamEntries, (entries) => {
-  if (activeIndex.value > entries.length - 1) activeIndex.value = 0
-}, { immediate: true })
+watch(
+  streamEntries,
+  (entries) => {
+    if (activeIndex.value > entries.length - 1) activeIndex.value = 0
+  },
+  { immediate: true }
+)
 
 const activeStream = computed(() => streamEntries.value[activeIndex.value] ?? null)
-const embedUrl = computed(() => activeStream.value
-  ? `https://www.youtube.com/embed/${activeStream.value.youtubeId}?&autoplay=1&rel=0&modestbranding=1&playsinline=1${activeStream.value.youtubeId == 'NaJklsJonD4' ? '&mute=1' : ''}`
-  : null)
+const embedUrl = computed(() =>
+  activeStream.value
+    ? `https://www.youtube.com/embed/${activeStream.value.youtubeId}?&autoplay=1&rel=0&modestbranding=1&playsinline=1${activeStream.value.youtubeId == 'NaJklsJonD4' ? '&mute=1' : ''}`
+    : null
+)
 </script>
 
 <template>
@@ -45,7 +53,15 @@ const embedUrl = computed(() => activeStream.value
         :src="embedUrl"
         :title="activeStream?.label ?? 'NASA Livestream'"
         class="h-full w-full"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allow="
+          accelerometer;
+          autoplay;
+          clipboard-write;
+          encrypted-media;
+          gyroscope;
+          picture-in-picture;
+          web-share;
+        "
         allowfullscreen
         loading="lazy"
         referrerpolicy="strict-origin-when-cross-origin"

@@ -12,7 +12,8 @@
     @apply border-white/[0.08];
   }
 
-  html, body {
+  html,
+  body {
     @apply h-full overflow-hidden;
     color-scheme: dark;
   }
@@ -27,7 +28,6 @@
 }
 
 @layer components {
-
   /* ─── Dashboard Layout ─────────────────────────────────── */
 
   .dashboard-root {
@@ -43,7 +43,7 @@
   .mission-header {
     @apply relative z-20 flex h-11 shrink-0 items-center justify-between
            border-b border-white/[0.06] bg-[#06080f]/95 px-4 backdrop-blur-xl;
-    background-image: linear-gradient(90deg, rgba(56,189,248,0.04) 0%, transparent 40%);
+    background-image: linear-gradient(90deg, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
   }
 
   .header-logo {
@@ -132,13 +132,13 @@
   .timeline-scroll {
     @apply flex-1 overflow-y-auto px-4 py-3;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.08) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
   }
 
   .stream-scroll {
     @apply flex-1 overflow-y-auto p-4 flex flex-col gap-3;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.08) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
   }
 
   /* ─── Phase filters ────────────────────────────────────── */
@@ -194,7 +194,9 @@
 
   .timeline-item-active .timeline-content {
     @apply border-cyan-500/25 bg-cyan-500/[0.05];
-    box-shadow: 0 0 0 1px rgba(56,189,248,0.06), inset 0 1px 0 rgba(56,189,248,0.08);
+    box-shadow:
+      0 0 0 1px rgba(56, 189, 248, 0.06),
+      inset 0 1px 0 rgba(56, 189, 248, 0.08);
   }
 
   .timeline-item-complete .timeline-content {
@@ -205,7 +207,8 @@
     @apply border-white/[0.12] bg-white/[0.03];
   }
 
-  .timeline-item:not(.timeline-item-active):not(.timeline-item-complete):not(.timeline-item-next) .timeline-content {
+  .timeline-item:not(.timeline-item-active):not(.timeline-item-complete):not(.timeline-item-next),
+    .timeline-content {
     @apply border-white/[0.05] bg-transparent;
   }
 
@@ -233,7 +236,7 @@
 
   .progress-fill-active {
     @apply bg-gradient-to-r from-cyan-500 to-cyan-300;
-    box-shadow: 0 0 8px rgba(56,189,248,0.5);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
   }
 
   .progress-fill-complete {
@@ -374,7 +377,7 @@
 
   .active-event-card {
     @apply rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-4;
-    box-shadow: inset 0 1px 0 rgba(56,189,248,0.06);
+    box-shadow: inset 0 1px 0 rgba(56, 189, 248, 0.06);
   }
 
   .next-event-card {
@@ -394,20 +397,98 @@
   .status-pill-met {
     @apply border-amber-500/25 bg-amber-500/[0.08] text-amber-400;
   }
+
+  .status-pill-complete {
+    @apply border-emerald-500/25 bg-emerald-500/[0.08] text-emerald-400;
+  }
+
+  /* ─── Mission Complete Page ─────────────────────────────── */
+
+  .mission-complete-root {
+    @apply flex flex-1 flex-col items-center overflow-y-auto px-4 py-10 gap-8;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+  }
+
+  .mission-complete-hero {
+    @apply flex flex-col items-center gap-3 text-center max-w-lg w-full;
+  }
+
+  .mission-complete-icon-ring {
+    @apply flex h-20 w-20 items-center justify-center rounded-full
+           border border-cyan-400/20 bg-cyan-400/[0.06]
+           shadow-[0_0_40px_rgba(56,189,248,0.15)];
+  }
+
+  .mission-complete-eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.25em] text-emerald-400/80 mt-2;
+  }
+
+  .mission-complete-heading {
+    @apply font-bold text-4xl tracking-tight text-white;
+  }
+
+  .mission-complete-subheading {
+    @apply text-sm text-slate-400;
+  }
+
+  .mission-complete-met {
+    @apply mt-2 flex flex-col items-center gap-1 rounded-xl border border-white/[0.08]
+           bg-white/[0.02] px-8 py-4;
+  }
+
+  .mission-complete-met-label {
+    @apply text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500;
+  }
+
+  .mission-complete-met-clock {
+    @apply font-mono text-2xl font-bold tabular-nums text-amber-200;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+  }
+
+  .mission-complete-feed {
+    @apply w-full max-w-2xl rounded-xl border border-white/[0.08] bg-white/[0.02] overflow-hidden;
+  }
+
+  .mission-complete-feed-header {
+    @apply flex items-center gap-2.5 border-b border-white/[0.06] bg-white/[0.015] px-4 py-2.5;
+  }
+
+  .mission-complete-feed-body {
+    @apply p-4;
+  }
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────── */
 
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
 
 /* ─── Live pulse ─────────────────────────────────────────── */
 
 @keyframes pulse-glow {
-  0%, 100% { opacity: 1; box-shadow: 0 0 6px currentColor; }
-  50% { opacity: 0.5; box-shadow: 0 0 14px currentColor; }
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 6px currentColor;
+  }
+  50% {
+    opacity: 0.5;
+    box-shadow: 0 0 14px currentColor;
+  }
 }
 
 .live-dot {
@@ -417,18 +498,22 @@
 /* ─── Active progress shimmer ────────────────────────────── */
 
 @keyframes shimmer-bar {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
 
 .progress-fill-active {
   background: linear-gradient(
     90deg,
-    rgba(34,211,238,0.6) 0%,
-    rgba(56,189,248,1) 40%,
-    rgba(186,230,253,0.9) 60%,
-    rgba(56,189,248,1) 80%,
-    rgba(34,211,238,0.6) 100%
+    rgba(34, 211, 238, 0.6) 0%,
+    rgba(56, 189, 248, 1) 40%,
+    rgba(186, 230, 253, 0.9) 60%,
+    rgba(56, 189, 248, 1) 80%,
+    rgba(34, 211, 238, 0.6) 100%
   );
   background-size: 200% 100%;
   animation: shimmer-bar 2.5s linear infinite;

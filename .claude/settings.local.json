@@ -1,7 +1,5 @@
 {
   "permissions": {
-    "allow": [
-      "mcp__webstorm__list_directory_tree"
-    ]
+    "allow": ["mcp__webstorm__list_directory_tree"]
   }
 }

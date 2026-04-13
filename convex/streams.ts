@@ -17,10 +17,18 @@ export const upsert = mutation({
   },
   handler: async (ctx, args) => {
     if (args.id) {
-      await ctx.db.patch(args.id, { youtubeId: args.youtubeId, label: args.label, order: args.order })
+      await ctx.db.patch(args.id, {
+        youtubeId: args.youtubeId,
+        label: args.label,
+        order: args.order
+      })
       return args.id
     }
-    return await ctx.db.insert('streams', { youtubeId: args.youtubeId, label: args.label, order: args.order })
+    return await ctx.db.insert('streams', {
+      youtubeId: args.youtubeId,
+      label: args.label,
+      order: args.order
+    })
   }
 })
 

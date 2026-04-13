@@ -1,4 +1,12 @@
-import { LAUNCH_DATE, POST_LAUNCH_EVENTS, PRE_LAUNCH_EVENTS, type MissionEvent } from '~~/shared/mission.config'
+import {
+  LAUNCH_DATE,
+  POST_LAUNCH_EVENTS,
+  PRE_LAUNCH_EVENTS,
+  type MissionEvent
+} from '~~/shared/mission.config'
+
+// Actual splashdown: April 10 2026 08:07:27 AM EDT (12:07:27 UTC)
+export const SPLASHDOWN_MET_SECONDS = 740607
 
 export interface TimelineEvent extends MissionEvent {
   timestamp: number
@@ -36,9 +44,10 @@ export const getEffectiveTSeconds = (secondsToLaunch: number): number => {
       return hold.frozenT
     }
   }
-  const futureHoldTime = HOLDS
-    .filter(h => secondsToLaunch > h.startSeconds)
-    .reduce((sum, h) => sum + (h.startSeconds - h.endSeconds), 0)
+  const futureHoldTime = HOLDS.filter(h => secondsToLaunch > h.startSeconds).reduce(
+    (sum, h) => sum + (h.startSeconds - h.endSeconds),
+    0
+  )
   return Math.max(0, secondsToLaunch - futureHoldTime)
 }
 
@@ -135,26 +144,28 @@ export const formatLClock = (secondsToLaunch: number): string => {
   return `${String(totalHours).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-export const formatEventTimestamp = (timestamp: number) => new Intl.DateTimeFormat(undefined, {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-  hour: 'numeric',
-  minute: '2-digit',
-  second: '2-digit',
-  timeZoneName: 'short'
-}).format(timestamp)
+export const formatEventTimestamp = (timestamp: number) =>
+  new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'short'
+  }).format(timestamp)
 
-export const formatEventEDT = (timestamp: number) => new Intl.DateTimeFormat('en-US', {
-  timeZone: 'America/New_York',
-  month: 'short',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: '2-digit',
-  second: '2-digit',
-  hour12: true,
-  timeZoneName: 'short'
-}).format(timestamp)
+export const formatEventEDT = (timestamp: number) =>
+  new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+    timeZoneName: 'short'
+  }).format(timestamp)
 
 export const getEventClocks = (event: { offsetSeconds: number, timestamp: number }) => {
   if (event.offsetSeconds < 0) {
@@ -196,7 +207,11 @@ export const getMissionState = (
 
   // If go was given after the original T-10 moment, shift T-0 to goTime + 10 min
   let effectiveLaunchMs = baseLaunchMs
-  if (terminalCountGo?.isGo && terminalCountGo.goTime != null && terminalCountGo.goTime > originalTerminalCountMs) {
+  if (
+    terminalCountGo?.isGo
+    && terminalCountGo.goTime != null
+    && terminalCountGo.goTime > originalTerminalCountMs
+  ) {
     effectiveLaunchMs = terminalCountGo.goTime + TERMINAL_COUNT_SECONDS * 1000
   }
 
@@ -211,31 +226,31 @@ export const getMissionState = (
 
   const missionElapsedSeconds = Math.max(0, Math.floor((now - effectiveLaunchMs) / 1000))
   const activeIndex = effectiveTimeline.findLastIndex(event => event.timestamp <= now)
-  const activeEvent = activeIndex >= 0 ? effectiveTimeline[activeIndex] ?? null : null
+  const activeEvent = activeIndex >= 0 ? (effectiveTimeline[activeIndex] ?? null) : null
   const nextEvent = effectiveTimeline.find(event => event.timestamp > now) || null
   const firstTimestamp = effectiveTimeline[0]?.timestamp ?? effectiveLaunchMs
   const lastTimestamp = effectiveTimeline.at(-1)?.timestamp ?? effectiveLaunchMs
 
-  const progress = now <= firstTimestamp
-    ? 0
-    : now >= lastTimestamp
-      ? 1
-      : (now - firstTimestamp) / (lastTimestamp - firstTimestamp)
+  const progress
+    = now <= firstTimestamp
+      ? 0
+      : now >= lastTimestamp
+        ? 1
+        : (now - firstTimestamp) / (lastTimestamp - firstTimestamp)
 
   const mode: 'countdown' | 'met' = now < effectiveLaunchMs ? 'countdown' : 'met'
-  const effectiveTSeconds = mode === 'countdown'
-    ? (terminalCountHold ? TERMINAL_COUNT_SECONDS : getEffectiveTSeconds(secondsToLaunch))
-    : missionElapsedSeconds
+  const effectiveTSeconds
+    = mode === 'countdown'
+      ? terminalCountHold
+        ? TERMINAL_COUNT_SECONDS
+        : getEffectiveTSeconds(secondsToLaunch)
+      : missionElapsedSeconds
   const inHold = terminalCountHold || (mode === 'countdown' && isInHold(secondsToLaunch))
 
   const activeEventIdSet = new Set<string>()
   if (activeEvent) activeEventIdSet.add(activeEvent.id)
   for (const event of effectiveTimeline) {
-    if (
-      event.endTimestamp !== undefined
-      && event.timestamp <= now
-      && event.endTimestamp > now
-    ) {
+    if (event.endTimestamp !== undefined && event.timestamp <= now && event.endTimestamp > now) {
       activeEventIdSet.add(event.id)
     }
   }

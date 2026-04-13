@@ -3,8 +3,8 @@ import { api } from '~~/convex/_generated/api'
 
 const { data: messages } = useConvexQuery(api.statusMessages.list)
 
-const visibleMessages = computed(() =>
-  messages.value?.filter(m => m.isVisible).sort((a, b) => a.order - b.order) ?? []
+const visibleMessages = computed(
+  () => messages.value?.filter(m => m.isVisible).sort((a, b) => a.order - b.order) ?? []
 )
 </script>
 
