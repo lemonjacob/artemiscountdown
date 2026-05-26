@@ -30,10 +30,15 @@ const filteredTimeline = computed(() => {
 })
 
 const mobileTab = ref<'timeline' | 'stream'>('timeline')
+const showCompletedTimeline = ref(false)
 
 const isMissionComplete = computed(
   () => missionState.value.mode === 'met' && missionState.value.nextEvent === null
 )
+
+watch(isMissionComplete, (complete) => {
+  if (!complete) showCompletedTimeline.value = false
+})
 
 const metClockValue = computed(() => {
   const seconds = isMissionComplete.value
@@ -49,7 +54,7 @@ const metClockValue = computed(() => {
 
     <!-- Mission Complete Layout -->
     <div
-      v-if="isMissionComplete"
+      v-if="isMissionComplete && !showCompletedTimeline"
       class="mission-complete-root"
     >
       <div class="mission-complete-hero">
@@ -72,6 +77,17 @@ const metClockValue = computed(() => {
           <span class="mission-complete-met-label">Mission Elapsed Time</span>
           <span class="mission-complete-met-clock">T+{{ metClockValue }}</span>
         </div>
+        <button
+          type="button"
+          class="mission-complete-timeline-btn"
+          @click="showCompletedTimeline = true"
+        >
+          <UIcon
+            name="i-lucide-list-ordered"
+            class="h-4 w-4"
+          />
+          View Completed Timeline
+        </button>
       </div>
 
       <div class="mission-complete-feed">
@@ -129,6 +145,18 @@ const metClockValue = computed(() => {
               />
               <span class="panel-title">Mission Timeline</span>
             </div>
+            <button
+              v-if="isMissionComplete && showCompletedTimeline"
+              type="button"
+              class="timeline-summary-btn"
+              @click="showCompletedTimeline = false"
+            >
+              <UIcon
+                name="i-lucide-circle-check"
+                class="h-3.5 w-3.5"
+              />
+              Summary
+            </button>
             <div class="phase-filters">
               <button
                 v-for="opt in [
